@@ -36,7 +36,7 @@ function SectionTag({ number, color, label }) {
 }
 
 // ─── Reveal Text: clips from bottom like a curtain rising ──────────────────
-function RevealText({ children, delay = 0, className = '' }) {
+function RevealText({ children, delay = 0, className = '', style = {} }) {
   return (
     <div className="overflow-hidden">
       <motion.div
@@ -45,7 +45,7 @@ function RevealText({ children, delay = 0, className = '' }) {
         whileInView={{ y: '0%', rotateX: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 1.1, delay, ease: [0.22, 1, 0.36, 1] }}
-        style={{ transformOrigin: 'bottom center', display: 'block' }}
+        style={{ transformOrigin: 'bottom center', display: 'block', ...style }}
       >
         {children}
       </motion.div>
@@ -309,7 +309,7 @@ export function Members() {
         {/* Narrative blurb */}
         <RevealText
           delay={0.1}
-          className="text-white/30 font-sans text-sm uppercase tracking-[0.3em] mb-12"
+          className="font-serif text-white/75 text-[14px] md:text-[16px] uppercase tracking-[0.35em] mb-12"
         >
           The souls behind the curtain
         </RevealText>
@@ -348,7 +348,9 @@ export function Members() {
                 <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
                   <div className="border-t border-white/10 pt-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                     <h4 className="font-serif text-xl text-white leading-tight">{member.name}</h4>
-                    <p className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <p
+                      className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    >
                       {member.role}
                     </p>
                   </div>
@@ -447,14 +449,14 @@ export function Gallery() {
           <div>
             <SectionTag number="04" color="#E5FC54" label="Archives" />
             <motion.p
-              className="font-serif text-xl md:text-2xl text-white/40 italic leading-relaxed max-w-md"
+              className="font-serif text-[1.55rem] md:text-[2.1rem] text-white/85 italic leading-relaxed max-w-xl antialiased"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
               "Art is not what you see,<br />but what you make others see."
-              <span className="block text-[10px] not-italic uppercase tracking-widest text-white/20 font-sans mt-2">
+              <span className="block text-[11px] not-italic uppercase tracking-widest text-white/35 font-sans mt-2">
                 — Edgar Degas
               </span>
             </motion.p>
