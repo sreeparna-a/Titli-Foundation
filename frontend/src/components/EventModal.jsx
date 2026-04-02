@@ -170,7 +170,7 @@ export default function EventModal({ event, onClose }) {
     <AnimatePresence>
       {isOpen && event && (
         <motion.div
-          className="fixed inset-0 z-100000 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-100000 flex items-center justify-center px-3 py-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
@@ -213,12 +213,16 @@ export default function EventModal({ event, onClose }) {
 
             {/* Scrollable inner */}
             <div
-              className="overflow-y-auto modal-scrollbar max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)]"
+              className="overflow-y-auto modal-scrollbar sm:max-h-[calc(100dvh-3rem)]"
               data-lenis-prevent
-              style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+              style={{
+                overscrollBehavior: 'contain',
+                touchAction: 'pan-y',
+                maxHeight: 'calc(100dvh - 5.75rem - env(safe-area-inset-top) - env(safe-area-inset-bottom))',
+              }}
             >
               <motion.div
-                className="p-6 sm:p-10 flex flex-col gap-8"
+                className="p-4 sm:p-10 flex flex-col gap-6 sm:gap-8"
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
