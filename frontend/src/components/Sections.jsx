@@ -6,7 +6,7 @@ import EventModal from './EventModal';
 function SectionTag({ number, color, label }) {
   return (
     <motion.div
-      className="flex items-center gap-4 mb-16"
+      className="flex items-center gap-4 mb-10 md:mb-16"
       initial={{ opacity: 0, x: -60, skewX: -10 }}
       whileInView={{ opacity: 1, x: 0, skewX: 0 }}
       viewport={{ once: true, margin: '-80px' }}
@@ -155,7 +155,7 @@ export function Events() {
       <section
         id="events"
         ref={sectionRef}
-        className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+        className="relative w-full py-24 md:py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
       >
         {/* Subtle parallax ambient shape */}
         <motion.div
@@ -167,7 +167,7 @@ export function Events() {
         />
 
         <div className="max-w-5xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 md:mb-16 gap-4 md:gap-6">
             <SectionTag number="02" color="#d17c26" label="Curtain Calls" />
 
             <motion.div
@@ -202,7 +202,7 @@ export function Events() {
                   animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
                   exit={{ opacity: 0, x: -40, filter: 'blur(8px)', transition: { duration: 0.3 } }}
                   transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className="group flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/10 cursor-pointer overflow-hidden relative"
+                  className="group flex flex-col md:flex-row md:items-center justify-between py-6 md:py-8 border-b border-white/10 cursor-pointer overflow-hidden relative"
                   onClick={() => setSelectedEvent(event)}
                   role="button"
                   tabIndex={0}
@@ -231,13 +231,13 @@ export function Events() {
                     <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>
                       {event.type}
                     </span>
-                    <h3 className="text-3xl md:text-5xl font-serif text-white group-hover:tracking-wider transition-all duration-700 ease-out">
+                    <h3 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-serif text-white group-hover:tracking-wider transition-all duration-700 ease-out leading-tight">
                       {event.title}
                     </h3>
                   </div>
 
-                  <div className="relative z-10 mt-4 md:mt-0 text-right pr-4 flex items-center gap-4">
-                    <span className="text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
+                  <div className="relative z-10 mt-2 md:mt-0 text-right pr-4 flex items-center gap-3 self-start md:self-auto pl-4 md:pl-0">
+                    <span className="text-sm md:text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
                       {event.date}
                     </span>
                     {/* "View Details" label on hover */}
@@ -292,7 +292,7 @@ export function Members() {
     <section
       id="members"
       ref={sectionRef}
-      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+      className="relative w-full py-24 md:py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
     >
       {/* Ambient left glow */}
       <motion.div
@@ -314,7 +314,7 @@ export function Members() {
           The souls behind the curtain
         </RevealText>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {members.map((member, i) => (
             <motion.div
               key={member.id}
@@ -429,7 +429,7 @@ export function Gallery() {
     <section
       id="gallery"
       ref={sectionRef}
-      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+      className="relative w-full py-24 md:py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
     >
       {/* Ambient background glow */}
       <motion.div
@@ -489,7 +489,7 @@ export function Gallery() {
         <AnimatePresence mode="popLayout">
           <motion.div
             key={activeCategory}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 auto-rows-[260px]"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 auto-rows-[200px] sm:auto-rows-[240px] lg:auto-rows-[260px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -588,7 +588,7 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="relative w-full py-32 px-4 sm:px-8 md:px-24 border-t border-white/10 mt-16 mb-12 overflow-hidden"
+      className="relative w-full py-20 md:py-32 px-4 sm:px-8 md:px-24 border-t border-white/10 mt-8 md:mt-16 mb-8 md:mb-12 overflow-hidden"
     >
       {/* Background decoration */}
       <motion.div
@@ -601,7 +601,7 @@ export function Contact() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-titli/3 blur-[120px] rounded-full" />
       </motion.div>
 
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 relative z-10 pl-0 sm:pl-12 lg:pl-24">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-24 relative z-10 pl-0 sm:pl-6 lg:pl-24">
         {/* Left Side */}
         <motion.div
           className="flex flex-col md:w-1/2"
@@ -624,7 +624,7 @@ export function Contact() {
 
           <div className="overflow-hidden mb-6">
             <motion.h2
-              className="text-4xl md:text-6xl lg:text-7xl font-serif text-white leading-tight"
+              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-serif text-white leading-tight"
               initial={{ y: '100%' }}
               whileInView={{ y: '0%' }}
               viewport={{ once: true }}
@@ -637,7 +637,7 @@ export function Contact() {
           </div>
 
           <motion.p
-            className="font-sans text-white/50 text-lg md:text-xl font-light mb-10 max-w-md"
+            className="font-sans text-white/50 text-base md:text-xl font-light mb-8 md:mb-10 max-w-md"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -660,7 +660,7 @@ export function Contact() {
                 <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">{item.label}</p>
                 <a
                   href={item.href}
-                  className="text-lg text-white hover:text-titli transition-colors duration-300 font-serif group flex items-center gap-2"
+                  className="text-base md:text-lg text-white hover:text-titli transition-colors duration-300 font-serif group flex items-center gap-2 break-all"
                 >
                   {item.value}
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity text-titli text-sm">↗</span>
@@ -701,7 +701,7 @@ export function Contact() {
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-titli/5 blur-[100px] rounded-full pointer-events-none z-0" />
 
-          <form className="relative z-10 flex flex-col gap-6 w-full h-full p-8 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
+          <form className="relative z-10 flex flex-col gap-5 md:gap-6 w-full h-full p-6 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
             {[
               { label: 'Your Name', type: 'text', placeholder: 'John Doe' },
               { label: 'Email Address', type: 'email', placeholder: 'hello@example.com' },

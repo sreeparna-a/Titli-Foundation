@@ -9,6 +9,9 @@
   
   --font-serif: "Cinzel Decorative", serif;
   --font-sans: "Outfit", sans-serif;
+
+  /* Custom xs breakpoint */
+  --breakpoint-xs: 375px;
 }
 
 :root {
@@ -16,6 +19,8 @@
   color: var(--color-titli);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  /* Prevent mobile overflow issues */
+  max-width: 100vw;
 }
 
 body {
@@ -137,7 +142,13 @@ body {
 
 /* ─── Smooth section anchor offset (navbar clearance) ────────────── */
 [id] {
-  scroll-margin-top: 80px;
+  scroll-margin-top: 72px;
+}
+
+@media (min-width: 768px) {
+  [id] {
+    scroll-margin-top: 80px;
+  }
 }
 
 /* ─── Page transition shimmer ────────────────────────────────────── */

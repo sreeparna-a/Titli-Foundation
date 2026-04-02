@@ -48,14 +48,14 @@ export default function About() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative w-full min-h-screen flex items-center justify-center py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+      className="relative w-full min-h-screen flex items-center justify-center py-24 md:py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
     >
       {/* Parallax background faint text */}
       <motion.div
         className="absolute top-1/2 -translate-y-1/2 left-0 w-full overflow-hidden pointer-events-none opacity-[0.025] flex justify-center z-0"
         style={{ y: bgY, scale: bgScale }}
       >
-        <span className="text-[20rem] font-serif uppercase tracking-tighter text-white whitespace-nowrap select-none">
+        <span className="text-[8rem] sm:text-[12rem] md:text-[20rem] font-serif uppercase tracking-tighter text-white whitespace-nowrap select-none">
           TITLI
         </span>
       </motion.div>
@@ -96,7 +96,7 @@ export default function About() {
 
         {/* Headline reveal */}
         <motion.h3
-          className="text-3xl md:text-5xl lg:text-7xl font-serif text-white leading-tight mb-16"
+          className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-serif text-white leading-tight mb-10 md:mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
@@ -112,7 +112,7 @@ export default function About() {
         {/* Scroll-animated words */}
         <div
           ref={containerRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 font-sans text-white text-lg font-light leading-relaxed"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 font-sans text-white text-base md:text-lg font-light leading-relaxed"
         >
           <p>
             {words1.map((word, i) => (
@@ -140,7 +140,7 @@ export default function About() {
 
         {/* Bottom counter / decoration */}
         <motion.div
-          className="mt-20 flex items-center gap-6"
+          className="mt-12 md:mt-20 flex items-center gap-4 sm:gap-6 flex-wrap"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -151,9 +151,9 @@ export default function About() {
             { num: '60+', label: 'Productions' },
             { num: '∞', label: 'Stories Told' },
           ].map((stat, i) => (
-            <div key={i} className="flex flex-col items-center border-l border-white/10 pl-6 first:border-0 first:pl-0">
-              <span className="font-serif text-3xl text-titli">{stat.num}</span>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-white/30 font-sans mt-1">{stat.label}</span>
+            <div key={i} className="flex flex-col items-center border-l border-white/10 pl-4 sm:pl-6 first:border-0 first:pl-0">
+              <span className="font-serif text-2xl sm:text-3xl text-titli">{stat.num}</span>
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 font-sans mt-1">{stat.label}</span>
             </div>
           ))}
         </motion.div>
