@@ -182,7 +182,7 @@ export default function Navbar() {
               <div className="w-12 h-px bg-titli/20" />
               <p className="text-[9px] md:text-xs uppercase tracking-[0.4em] text-white/20 font-sans text-right">
                 Titli Foundation<br/>
-                <span className="text-titli/40">ESTD 2021</span>
+                <span className="text-titli/40">ESTD 2008</span>
               </p>
             </motion.div>
           </motion.div>

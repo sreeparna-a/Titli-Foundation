@@ -96,7 +96,7 @@ export default function App() {
               <h2 className="text-3xl md:text-4xl text-titli font-serif italic">Titli</h2>
             </div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-sans">
-              © {new Date().getFullYear()} Titli Foundation. A Social Responsibility.
+              © {new Date().getFullYear()} Titli Foundation • ESTD 2008 • A Social Responsibility.
             </p>
           </footer>
         </div>

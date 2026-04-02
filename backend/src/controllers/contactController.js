@@ -81,7 +81,7 @@ export const mailContact = async(req, res) => {
                 
                 <div style="margin-top: 40px; border-top: 1px solid rgba(229, 252, 84, 0.1); padding-top: 20px; font-size: 12px; color: rgba(255,255,255,0.5);">
                     <p style="margin: 0;">Warm regards,<br/><strong>The Titli Foundation Team</strong></p>
-                    <p style="margin-top: 10px;"><em>ESTD 2021</em></p>
+                    <p style="margin-top: 10px;"><em>ESTD 2008</em></p>
                 </div>
             </div>
         `,
