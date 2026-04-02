@@ -1,5 +1,6 @@
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useState, useRef } from 'react';
+import EventModal from './EventModal';
 
 // ─── Shared Artsy Section Header ────────────────────────────────────────────
 function SectionTag({ number, color, label }) {
@@ -52,11 +53,77 @@ function RevealText({ children, delay = 0, className = '' }) {
   );
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────
-const eventsPlaceholder = [
-  { id: 1, title: 'The Autumn Monologues', type: 'Upcoming', date: 'Oct 24, 2026', color: 'text-titli', accentColor: '#E5FC54' },
-  { id: 2, title: 'Shadows on Film', type: 'Previous', date: 'Aug 12, 2026', color: 'text-[#d17c26]', accentColor: '#d17c26' },
-  { id: 3, title: 'Canvas & Curtains', type: 'Previous', date: 'May 04, 2026', color: 'text-[#297a51]', accentColor: '#297a51' },
+// ─── Events Data ──────────────────────────────────────────────────────────
+const eventsData = [
+  {
+    id: 1,
+    title: 'The Autumn Monologues',
+    type: 'Upcoming',
+    date: 'Oct 24, 2026',
+    color: 'text-titli',
+    accentColor: '#E5FC54',
+    description:
+      'A luminous evening of one-act plays that explore the textures of solitude, grief, and unexpected joy. "The Autumn Monologues" brings together six original pieces by emerging playwrights from across Bengal, performed on an intimate stage shaped like a crescent moon. Each monologue is a universe unto itself — raw, vulnerable, and alive.',
+    details: [
+      { label: 'Venue', value: 'Academy of Fine Arts, Kolkata' },
+      { label: 'Duration', value: '2h 30min (incl. interval)' },
+      { label: 'Language', value: 'Bengali / English' },
+      { label: 'Directed by', value: 'Sreeparna Chatterjee' },
+      { label: 'Genre', value: 'Contemporary Theatre' },
+      { label: 'Tickets', value: '₹200 – ₹600' },
+    ],
+    photos: [
+      { src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80', caption: 'Rehearsal — Act III' },
+      { src: 'https://images.unsplash.com/photo-1507924538820-ede94a04019d?auto=format&fit=crop&w=1200&q=80', caption: 'Stage design preview' },
+      { src: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80', caption: 'Cast workshop' },
+    ],
+  },
+  {
+    id: 2,
+    title: 'Shadows on Film',
+    type: 'Previous',
+    date: 'Aug 12, 2026',
+    color: 'text-[#d17c26]',
+    accentColor: '#d17c26',
+    description:
+      'A curated retrospective of independent Bengali cinema spanning five decades, "Shadows on Film" invited audiences to rediscover lost masterworks and debut shorts in a single breath. With panel discussions, director Q&As, and a photographic exhibition of behind-the-scenes moments, the festival became a pilgrimage for cinephiles.',
+    details: [
+      { label: 'Venue', value: 'Nandan Cinema, Kolkata' },
+      { label: 'Editions shown', value: '14 short films, 6 features' },
+      { label: 'Languages', value: 'Bengali, Hindi, Santali' },
+      { label: 'Curated by', value: 'Mira Banerjee' },
+      { label: 'Genre', value: 'Film Retrospective' },
+      { label: 'Footfall', value: '2,400+ visitors' },
+    ],
+    photos: [
+      { src: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80', caption: 'Screening night' },
+      { src: 'https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&w=1200&q=80', caption: 'Behind the lens' },
+      { src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80', caption: "Director's Q&A Panel" },
+    ],
+  },
+  {
+    id: 3,
+    title: 'Canvas & Curtains',
+    type: 'Previous',
+    date: 'May 04, 2026',
+    color: 'text-[#297a51]',
+    accentColor: '#297a51',
+    description:
+      '"Canvas & Curtains" was a one-week multidisciplinary residency at Titli HQ where visual artists and theatre-makers collided. The result — a hybrid exhibition where paintings became backdrops for live micro-performances, and the audience wandered through a living gallery. It blurred every line we thought we knew about art.',
+    details: [
+      { label: 'Venue', value: 'Titli Foundation Studio, Kolkata' },
+      { label: 'Duration', value: '7-day residency + finale night' },
+      { label: 'Artists', value: '12 visual artists, 8 performers' },
+      { label: 'Curated by', value: 'Rohan Sen & Arjun Das' },
+      { label: 'Genre', value: 'Interdisciplinary Art' },
+      { label: 'Footfall', value: '1,800+ visitors' },
+    ],
+    photos: [
+      { src: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80', caption: 'Opening night' },
+      { src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80', caption: 'Live performance' },
+      { src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80', caption: 'Artist residency' },
+    ],
+  },
 ];
 
 const members = [
@@ -69,6 +136,7 @@ const members = [
 // ─── Events Section ────────────────────────────────────────────────────────
 export function Events() {
   const [filter, setFilter] = useState('All');
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const sectionRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -78,119 +146,139 @@ export function Events() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
 
-  const filteredEvents = eventsPlaceholder.filter(
+  const filteredEvents = eventsData.filter(
     (e) => filter === 'All' || e.type === filter
   );
 
   return (
-    <section
-      id="events"
-      ref={sectionRef}
-      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
-    >
-      {/* Subtle parallax ambient shape */}
-      <motion.div
-        className="absolute -right-40 top-20 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 70%)',
-          y: bgY,
-        }}
-      />
+    <>
+      <section
+        id="events"
+        ref={sectionRef}
+        className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+      >
+        {/* Subtle parallax ambient shape */}
+        <motion.div
+          className="absolute -right-40 top-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 70%)',
+            y: bgY,
+          }}
+        />
 
-      <div className="max-w-5xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
-          <SectionTag number="02" color="#d17c26" label="Curtain Calls" />
+        <div className="max-w-5xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
+            <SectionTag number="02" color="#d17c26" label="Curtain Calls" />
 
-          <motion.div
-            className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            <motion.div
+              className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max"
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {['All', 'Upcoming', 'Previous'].map((f) => (
+                <motion.button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  whileTap={{ scale: 0.94 }}
+                  className={`text-xs uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-colors duration-400 ${
+                    filter === f ? 'bg-white text-forest' : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  {f}
+                </motion.button>
+              ))}
+            </motion.div>
+          </div>
+
+          <div className="flex flex-col border-t border-white/10 min-h-[300px]">
+            <AnimatePresence mode="popLayout">
+              {filteredEvents.map((event, i) => (
+                <motion.div
+                  key={event.id}
+                  layout
+                  initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
+                  animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
+                  exit={{ opacity: 0, x: -40, filter: 'blur(8px)', transition: { duration: 0.3 } }}
+                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className="group flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/10 cursor-pointer overflow-hidden relative"
+                  onClick={() => setSelectedEvent(event)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && setSelectedEvent(event)}
+                >
+                  {/* Hover Background Fill */}
+                  <motion.div
+                    className="absolute inset-0 z-0"
+                    style={{ background: `${event.accentColor}08` }}
+                    initial={{ scaleX: 0, originX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                  />
+
+                  {/* Accent line on left */}
+                  <motion.div
+                    className="absolute left-0 top-0 bottom-0 w-[2px] z-0"
+                    style={{ background: event.accentColor }}
+                    initial={{ scaleY: 0 }}
+                    whileInView={{ scaleY: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
+                  />
+
+                  <div className="relative z-10 flex flex-col md:w-1/2 pl-4">
+                    <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>
+                      {event.type}
+                    </span>
+                    <h3 className="text-3xl md:text-5xl font-serif text-white group-hover:tracking-wider transition-all duration-700 ease-out">
+                      {event.title}
+                    </h3>
+                  </div>
+
+                  <div className="relative z-10 mt-4 md:mt-0 text-right pr-4 flex items-center gap-4">
+                    <span className="text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
+                      {event.date}
+                    </span>
+                    {/* "View Details" label on hover */}
+                    <motion.span
+                      className="hidden md:block text-[9px] uppercase tracking-[0.25em] font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 py-1 rounded-full"
+                      style={{
+                        color: event.accentColor,
+                        border: `1px solid ${event.accentColor}40`,
+                        background: `${event.accentColor}10`,
+                      }}
+                    >
+                      View Details
+                    </motion.span>
+                    <motion.span
+                      className="text-sm font-sans opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ color: event.accentColor }}
+                    >
+                      →
+                    </motion.span>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Bottom narrative text */}
+          <motion.p
+            className="mt-12 text-[11px] uppercase tracking-[0.4em] text-white/20 font-sans"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, delay: 0.4 }}
           >
-            {['All', 'Upcoming', 'Previous'].map((f) => (
-              <motion.button
-                key={f}
-                onClick={() => setFilter(f)}
-                whileTap={{ scale: 0.94 }}
-                className={`text-xs uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-colors duration-400 ${
-                  filter === f ? 'bg-white text-forest' : 'text-white/50 hover:text-white'
-                }`}
-              >
-                {f}
-              </motion.button>
-            ))}
-          </motion.div>
+            Every performance leaves an echo
+          </motion.p>
         </div>
+      </section>
 
-        <div className="flex flex-col border-t border-white/10 min-h-[300px]">
-          <AnimatePresence mode="popLayout">
-            {filteredEvents.map((event, i) => (
-              <motion.div
-                key={event.id}
-                layout
-                initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
-                animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
-                exit={{ opacity: 0, x: -40, filter: 'blur(8px)', transition: { duration: 0.3 } }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/10 cursor-pointer overflow-hidden relative"
-              >
-                {/* Hover Background Fill */}
-                <motion.div
-                  className="absolute inset-0 z-0"
-                  style={{ background: `${event.accentColor}08` }}
-                  initial={{ scaleX: 0, originX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                />
-
-                {/* Accent line on left */}
-                <motion.div
-                  className="absolute left-0 top-0 bottom-0 w-[2px] z-0"
-                  style={{ background: event.accentColor }}
-                  initial={{ scaleY: 0 }}
-                  whileInView={{ scaleY: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
-                />
-
-                <div className="relative z-10 flex flex-col md:w-1/2 pl-4">
-                  <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>
-                    {event.type}
-                  </span>
-                  <h3 className="text-3xl md:text-5xl font-serif text-white group-hover:tracking-wider transition-all duration-700 ease-out">
-                    {event.title}
-                  </h3>
-                </div>
-
-                <div className="relative z-10 mt-4 md:mt-0 text-right pr-4 flex items-center gap-4">
-                  <span className="text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
-                    {event.date}
-                  </span>
-                  <motion.span
-                    className="text-sm font-sans opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ color: event.accentColor }}
-                  >
-                    →
-                  </motion.span>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {/* Bottom narrative text */}
-        <motion.p
-          className="mt-12 text-[11px] uppercase tracking-[0.4em] text-white/20 font-sans"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.5, delay: 0.4 }}
-        >
-          Every performance leaves an echo
-        </motion.p>
-      </div>
-    </section>
+      {/* Event Modal */}
+      <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+    </>
   );
 }
 

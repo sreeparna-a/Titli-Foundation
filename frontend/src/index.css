@@ -114,3 +114,48 @@ body {
 .link-underline:hover::after {
   width: 100%;
 }
+
+/* ─── Modal scrollbar ─────────────────────────────────────────────── */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(229, 252, 84, 0.15);
+  border-radius: 4px;
+}
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(229, 252, 84, 0.35);
+}
+
+/* ─── Section divider transition ─────────────────────────────────── */
+.section-divider-line {
+  will-change: width;
+}
+
+/* ─── Smooth section anchor offset (navbar clearance) ────────────── */
+[id] {
+  scroll-margin-top: 80px;
+}
+
+/* ─── Page transition shimmer ────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(229,252,84,0.3) 0%,
+    rgba(229,252,84,1) 50%,
+    rgba(229,252,84,0.3) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}

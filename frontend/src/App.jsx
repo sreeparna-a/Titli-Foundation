@@ -6,14 +6,36 @@ import Hero from './components/Hero';
 import ThreadedLine from './components/ThreadedLine';
 import About from './components/About';
 import CardStackSection from './components/CardStackSection';
+import SectionDivider from './components/SectionDivider';
 import { Events, Members, Gallery, Contact } from './components/Sections';
 
+// Each section paired with divider props that sit *above* it
 const sections = [
-  { Component: About, id: 'about' },
-  { Component: Events, id: 'events' },
-  { Component: Members, id: 'members' },
-  { Component: Gallery, id: 'gallery' },
-  { Component: Contact, id: 'contact' },
+  {
+    Component: About,
+    id: 'about',
+    divider: { variant: 'wave', accentColor: '#297a51', label: 'The Vision' },
+  },
+  {
+    Component: Events,
+    id: 'events',
+    divider: { variant: 'slash', accentColor: '#d17c26', label: 'Curtain Calls' },
+  },
+  {
+    Component: Members,
+    id: 'members',
+    divider: { variant: 'ripple', accentColor: '#297a51', label: 'The Ensemble' },
+  },
+  {
+    Component: Gallery,
+    id: 'gallery',
+    divider: { variant: 'tear', accentColor: '#E5FC54', label: 'Archives' },
+  },
+  {
+    Component: Contact,
+    id: 'contact',
+    divider: { variant: 'curtain', accentColor: '#d17c26', label: 'Say Hello' },
+  },
 ];
 
 export default function App() {
@@ -34,12 +56,21 @@ export default function App() {
 
             {/* Card stacking container */}
             <div className="relative z-20 bg-forest">
-              {sections.map(({ Component, id }, index) => (
-                <CardStackSection key={id} index={index} totalCards={sections.length}>
-                  <div className="bg-forest">
-                    <Component />
-                  </div>
-                </CardStackSection>
+              {sections.map(({ Component, id, divider }, index) => (
+                <div key={id}>
+                  {/* Cinematic section divider */}
+                  <SectionDivider
+                    variant={divider.variant}
+                    accentColor={divider.accentColor}
+                    label={divider.label}
+                  />
+
+                  <CardStackSection index={index} totalCards={sections.length}>
+                    <div className="bg-forest">
+                      <Component />
+                    </div>
+                  </CardStackSection>
+                </div>
               ))}
             </div>
           </main>
