@@ -275,101 +275,221 @@ export function Members() {
 }
 
 // ─── Gallery Section ───────────────────────────────────────────────────────
+const galleryData = [
+  {
+    src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+    alt: 'Theatre stage with dramatic lighting',
+    caption: 'A stage lit with memory',
+    category: 'Theatre',
+    size: 'tall',   // col-span-1, row-span-2
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80',
+    alt: 'Art exhibition opening',
+    caption: 'Where colour meets purpose',
+    category: 'Art',
+    size: 'wide',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&w=800&q=80',
+    alt: 'Cinema frames',
+    caption: 'Frames of feeling',
+    category: 'Film',
+    size: 'normal',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+    alt: 'Live performance crowd',
+    caption: 'Voices that echo',
+    category: 'Theatre',
+    size: 'normal',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80',
+    alt: 'Cultural festival',
+    caption: 'Celebration of roots',
+    category: 'Art',
+    size: 'wide',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=800&q=80',
+    alt: 'Film screening',
+    caption: 'Light through the lens',
+    category: 'Film',
+    size: 'normal',
+  },
+];
+
+const CATEGORIES = ['All', 'Theatre', 'Film', 'Art'];
+
 export function Gallery() {
   const sectionRef = useRef(null);
+  const stripRef = useRef(null);
+  const [activeCategory, setActiveCategory] = useState('All');
+
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const { scrollYProgress: stripScroll } = useScroll({ target: stripRef, offset: ['start end', 'end start'] });
 
-  const parallaxY1 = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
-  const parallaxY2 = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
-  const parallaxY3 = useTransform(scrollYProgress, [0, 1], ['0%', '-8%']);
+  const bgGlow = useTransform(scrollYProgress, [0, 0.5, 1], ['0%', '-5%', '-10%']);
+  const stripX = useTransform(stripScroll, [0, 1], ['0%', '-8%']);
 
-  const galleryImages = [
-    {
-      src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Theatre stage',
-      caption: 'A stage lit with memory',
-      y: parallaxY1,
-      colSpan: 'md:col-span-2',
-      aspect: 'aspect-[21/9]',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
-      alt: 'Culture',
-      caption: 'Voices that echo',
-      y: parallaxY2,
-      colSpan: '',
-      aspect: 'aspect-[4/3]',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&w=800&q=80',
-      alt: 'Cinema',
-      caption: 'Frames of feeling',
-      y: parallaxY3,
-      colSpan: '',
-      aspect: 'aspect-[4/3]',
-    },
-  ];
+  const filtered = galleryData.filter(
+    (img) => activeCategory === 'All' || img.category === activeCategory
+  );
 
   return (
     <section
       id="gallery"
       ref={sectionRef}
-      className="relative w-full py-32 px-4 sm:px-8 md:px-24 mb-24 overflow-hidden"
+      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
     >
+      {/* Ambient background glow */}
+      <motion.div
+        className="absolute -right-80 top-1/3 w-[700px] h-[700px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 65%)',
+          y: bgGlow,
+        }}
+      />
+
       <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
-        <SectionTag number="04" color="#E5FC54" label="Archives" />
 
-        {/* Narrative quote */}
-        <motion.div
-          className="mb-16 max-w-lg"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="font-serif text-2xl text-white/60 italic leading-relaxed">
-            "Art is not what you see, but what you make others see."
-          </p>
-          <span className="text-[10px] uppercase tracking-widest text-white/20 font-sans mt-3 block">
-            — Edgar Degas
-          </span>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {galleryImages.map((img, i) => (
-            <motion.div
-              key={i}
-              className={`${img.colSpan} ${img.aspect} overflow-hidden group relative`}
-              style={{ y: img.y }}
-              initial={{
-                opacity: 0,
-                clipPath: 'inset(0 100% 0 0)',
-              }}
-              whileInView={{
-                opacity: 1,
-                clipPath: 'inset(0 0% 0 0)',
-              }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 1.1, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+        {/* Header row */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+          <div>
+            <SectionTag number="04" color="#E5FC54" label="Archives" />
+            <motion.p
+              className="font-serif text-xl md:text-2xl text-white/40 italic leading-relaxed max-w-md"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out opacity-60 group-hover:opacity-100"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-1000" />
+              "Art is not what you see,<br />but what you make others see."
+              <span className="block text-[10px] not-italic uppercase tracking-widest text-white/20 font-sans mt-2">
+                — Edgar Degas
+              </span>
+            </motion.p>
+          </div>
 
-              {/* Caption Reveal */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                <p className="text-xs uppercase tracking-[0.3em] text-white/70 font-sans">{img.caption}</p>
-              </div>
-
-              {/* Corner accents */}
-              <div className="absolute top-3 left-3 w-5 h-5 border-t border-l border-white/0 group-hover:border-titli/60 transition-all duration-700" />
-              <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r border-white/0 group-hover:border-titli/60 transition-all duration-700" />
-            </motion.div>
-          ))}
+          {/* Category filter */}
+          <motion.div
+            className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max self-start md:self-end"
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {CATEGORIES.map((cat) => (
+              <motion.button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                whileTap={{ scale: 0.94 }}
+                className={`text-[10px] uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-all duration-300 ${
+                  activeCategory === cat
+                    ? 'bg-titli text-forest font-medium'
+                    : 'text-white/40 hover:text-white'
+                }`}
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </motion.div>
         </div>
+
+        {/* Masonry-style editorial grid */}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeCategory}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 auto-rows-[260px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {filtered.map((img, i) => {
+              const isTall = img.size === 'tall';
+              const isWide = img.size === 'wide';
+              return (
+                <motion.div
+                  key={img.src}
+                  layout
+                  className={`
+                    relative overflow-hidden group cursor-pointer
+                    ${isTall ? 'row-span-2' : ''}
+                    ${isWide ? 'sm:col-span-2' : ''}
+                  `}
+                  initial={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ zIndex: 10 }}
+                >
+                  {/* Image */}
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="absolute inset-0 w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-60 group-hover:opacity-100"
+                  />
+
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/50 group-hover:via-transparent transition-all duration-700" />
+
+                  {/* Category pill */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span
+                      className="text-[9px] uppercase tracking-[0.25em] font-sans px-3 py-1 rounded-full border border-titli/0 bg-black/40 text-white/40
+                      group-hover:border-titli/50 group-hover:text-titli group-hover:bg-black/60 transition-all duration-500"
+                    >
+                      {img.category}
+                    </span>
+                  </div>
+
+                  {/* Caption */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                    <div className="border-t border-white/10 pt-3">
+                      <p className="text-[11px] uppercase tracking-[0.3em] text-white/80 font-sans">{img.caption}</p>
+                    </div>
+                  </div>
+
+                  {/* Corner accents */}
+                  <div className="absolute top-3 right-3 w-6 h-6 border-t border-r border-white/0 group-hover:border-titli/50 transition-all duration-700" />
+                  <div className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-white/0 group-hover:border-titli/50 transition-all duration-700" />
+
+                  {/* Subtle index number */}
+                  <div className="absolute top-4 right-4 z-10 text-[10px] font-sans text-white/10 group-hover:text-white/30 transition-colors duration-500">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Horizontal filmstrip accent */}
+        <div ref={stripRef} className="mt-12 overflow-hidden border-t border-b border-white/5 py-4">
+          <motion.div
+            className="flex items-center gap-6 whitespace-nowrap"
+            style={{ x: stripX }}
+          >
+            {['Theatre', 'Film', 'Art', 'Culture', 'Story', 'Memory', 'Stage', 'Light', 'Voice'].map((word, i) => (
+              <span key={i} className="text-[10px] uppercase tracking-[0.4em] text-white/10 font-sans shrink-0">
+                {word} <span className="text-titli/20 mx-3">◆</span>
+              </span>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Bottom label */}
+        <motion.p
+          className="mt-8 text-[10px] uppercase tracking-[0.4em] text-white/15 font-sans"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, delay: 0.4 }}
+        >
+          Every frame holds a world
+        </motion.p>
       </div>
     </section>
   );
