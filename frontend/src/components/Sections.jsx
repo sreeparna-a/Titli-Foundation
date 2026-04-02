@@ -764,13 +764,18 @@ export function Contact() {
             >
               <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">Social</p>
               <div className="flex gap-6">
-                {['Instagram', 'Twitter'].map((s) => (
+                {[
+                  { name: 'Instagram', href: 'https://www.instagram.com/titli_foundation.rourkela/' },
+                  { name: 'Twitter', href: '#' },
+                ].map((s) => (
                   <a
-                    key={s}
-                    href="#"
+                    key={s.name}
+                    href={s.href}
+                    target={s.href !== '#' ? '_blank' : undefined}
+                    rel={s.href !== '#' ? 'noopener noreferrer' : undefined}
                     className="text-sm text-white/70 hover:text-titli uppercase tracking-widest font-sans transition-colors duration-300 group relative"
                   >
-                    {s}
+                    {s.name}
                     <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-titli group-hover:w-full transition-all duration-400" />
                   </a>
                 ))}
