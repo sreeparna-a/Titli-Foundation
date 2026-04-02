@@ -125,4 +125,4 @@ Titli's digital home is designed to feel like a theatre performance.
 
 ---
 
-© 2021 Titli Foundation. *Art for Change.*
+© 2008 Titli Foundation. *Art for Change.*
