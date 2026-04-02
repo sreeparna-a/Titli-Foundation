@@ -1,6 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 const navItems = [
   { name: 'Home', href: '#hero' },
   { name: 'About', href: '#about' },
@@ -10,7 +13,7 @@ const navItems = [
   { name: 'Contact', href: '#contact' },
 ];
 
-export default function Navbar({ isLoaded }) {
+export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const scrollTo = (href) => {

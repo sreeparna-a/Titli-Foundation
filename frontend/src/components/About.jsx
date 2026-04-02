@@ -1,6 +1,9 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 const wordOpacityRange = (index, total) => {
   const step = 1 / total;
   const start = index * step;

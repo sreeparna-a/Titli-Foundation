@@ -2,6 +2,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 // ── Simple focus trap + scroll lock ──────────────────────────────────────────
 function useModalEffects(isOpen) {
   useEffect(() => {

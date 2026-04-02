@@ -1,6 +1,20 @@
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { useState, useRef } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  useMotionValue,
+  useAnimationFrame,
+  useSpring,
+  useVelocity,
+} from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
 import EventModal from './EventModal';
+
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+// This ensures `motion` isn't flagged as unused.
+void motion;
 
 // ─── Shared Artsy Section Header ────────────────────────────────────────────
 function SectionTag({ number, color, label }) {
@@ -414,18 +428,86 @@ const CATEGORIES = ['All', 'Theatre', 'Film', 'Art'];
 
 export function Gallery() {
   const sectionRef = useRef(null);
-  const stripRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
-  const { scrollYProgress: stripScroll } = useScroll({ target: stripRef, offset: ['start end', 'end start'] });
 
   const bgGlow = useTransform(scrollYProgress, [0, 0.5, 1], ['0%', '-5%', '-10%']);
-  const stripX = useTransform(stripScroll, [0, 1], ['0%', '-8%']);
+
+  // Continuous marquee position (px) so reversing direction feels smooth.
+  const stripTrackRef = useRef(null);
+  const stripX = useMotionValue(0);
+  const loopWidthPxRef = useRef(0); // width of *one* half (because we duplicate the words)
+
+  // Direction + smoothing.
+  // For this strip, negative `x` means moving left (same direction as the old 0% -> -8% transform).
+  const stripDirRef = useRef(-1); // -1 = moving left, 1 = moving right
+  const lastDirRef = useRef(-1);
+  const lastDirChangeTimeRef = useRef(0);
+
+  const scrollVelocity = useVelocity(scrollYProgress);
+  const smoothScrollVelocity = useSpring(scrollVelocity, {
+    stiffness: 120,
+    damping: 22,
+    mass: 0.8,
+  });
+
+  useMotionValueEvent(smoothScrollVelocity, 'change', (v) => {
+    const now = performance.now();
+    // Cooldown prevents rapid flips while the user jitters between frames.
+    if (now - lastDirChangeTimeRef.current < 300) return;
+    // Deadzone prevents tiny scroll noise from flipping direction.
+    if (Math.abs(v) < 0.015) return;
+
+    // When scrolling down, `scrollYProgress` increases => velocity > 0.
+    // We want that to move the strip left (negative x).
+    const nextDir = v > 0 ? -1 : 1;
+    if (nextDir === lastDirRef.current) return;
+
+    lastDirRef.current = nextDir;
+    stripDirRef.current = nextDir;
+    lastDirChangeTimeRef.current = now;
+  });
+
+  useEffect(() => {
+    if (!stripTrackRef.current) return;
+
+    const updateWidths = () => {
+      const w = stripTrackRef.current?.getBoundingClientRect().width ?? 0;
+      loopWidthPxRef.current = w > 0 ? w / 2 : 0;
+    };
+
+    updateWidths();
+
+    const ro = new ResizeObserver(updateWidths);
+    ro.observe(stripTrackRef.current);
+
+    return () => ro.disconnect();
+  }, []);
+
+  useAnimationFrame((_, deltaMs) => {
+    const loopWidth = loopWidthPxRef.current;
+    if (!loopWidth) return;
+
+    // Base speed is tuned for a subtle gallery accent.
+    const speedPxPerSecond = 26;
+    const deltaPx = (speedPxPerSecond * deltaMs) / 1000;
+
+    let nextX = stripX.get() + stripDirRef.current * deltaPx;
+
+    // Wrap seamlessly: track is duplicated twice; loop is one half.
+    while (nextX <= -loopWidth) nextX += loopWidth;
+    while (nextX > 0) nextX -= loopWidth;
+
+    stripX.set(nextX);
+  });
 
   const filtered = galleryData.filter(
     (img) => activeCategory === 'All' || img.category === activeCategory
   );
+
+  const stripWords = ['Theatre', 'Film', 'Art', 'Culture', 'Story', 'Memory', 'Stage', 'Light', 'Voice'];
+  const stripWordsDoubled = [...stripWords, ...stripWords];
 
   return (
     <section
@@ -557,13 +639,17 @@ export function Gallery() {
         </AnimatePresence>
 
         {/* Horizontal filmstrip accent */}
-        <div ref={stripRef} className="mt-12 overflow-hidden border-t border-b border-white/5 py-4">
+        <div className="mt-12 overflow-hidden border-t border-b border-white/5 py-4">
           <motion.div
+            ref={stripTrackRef}
             className="flex items-center gap-6 whitespace-nowrap"
             style={{ x: stripX }}
           >
-            {['Theatre', 'Film', 'Art', 'Culture', 'Story', 'Memory', 'Stage', 'Light', 'Voice'].map((word, i) => (
-              <span key={i} className="text-[10px] uppercase tracking-[0.4em] text-white/10 font-sans shrink-0">
+            {stripWordsDoubled.map((word, i) => (
+              <span
+                key={i}
+                className="text-[10px] uppercase tracking-[0.4em] text-white/10 font-sans shrink-0"
+              >
                 {word} <span className="text-titli/20 mx-3">◆</span>
               </span>
             ))}

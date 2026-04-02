@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 export default function Preloader({ onComplete }) {
   const [progress, setProgress] = useState(0);
 

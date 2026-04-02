@@ -1,6 +1,9 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 /**
  * SectionDivider — cinematic animated transition between sections.
  * @param {string} variant  'wave' | 'slash' | 'curtain' | 'ripple' | 'tear'

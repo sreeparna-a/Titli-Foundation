@@ -1,5 +1,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 export default function ThreadedLine() {
   const { scrollYProgress } = useScroll();
   

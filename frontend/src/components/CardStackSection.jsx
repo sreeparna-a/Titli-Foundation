@@ -1,6 +1,9 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 /**
  * CardStackSection — wraps a section so it stacks on top of the previous
  * as the user scrolls, creating a cinematic "card reveal" effect.
@@ -8,7 +11,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
  * @param {number} index - position in stack (0-based)
  * @param {string} bgColor - tailwind or CSS bg for this card
  */
-export default function CardStackSection({ children, index, totalCards = 5 }) {
+export default function CardStackSection({ children, index }) {
   const ref = useRef(null);
 
   const { scrollYProgress } = useScroll({

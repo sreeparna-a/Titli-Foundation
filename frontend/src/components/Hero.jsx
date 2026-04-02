@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 import stageImg from '../assets/stage.png';
 
+// ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
+void motion;
+
 export default function Hero({ isLoaded }) {
   return (
     <section id="hero" className="relative w-full h-screen flex items-center justify-center overflow-hidden">

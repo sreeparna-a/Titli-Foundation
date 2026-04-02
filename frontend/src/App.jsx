@@ -56,22 +56,26 @@ export default function App() {
 
             {/* Card stacking container */}
             <div className="relative z-20 bg-forest">
-              {sections.map(({ Component, id, divider }, index) => (
-                <div key={id}>
-                  {/* Cinematic section divider */}
-                  <SectionDivider
-                    variant={divider.variant}
-                    accentColor={divider.accentColor}
-                    label={divider.label}
-                  />
+              {sections.map(({ Component, id, divider }, index) => {
+                // ESLint in this repo doesn't treat `<Component />` usage as a "use".
+                void Component;
+                return (
+                  <div key={id}>
+                    {/* Cinematic section divider */}
+                    <SectionDivider
+                      variant={divider.variant}
+                      accentColor={divider.accentColor}
+                      label={divider.label}
+                    />
 
-                  <CardStackSection index={index} totalCards={sections.length}>
-                    <div className="bg-forest">
-                      <Component />
-                    </div>
-                  </CardStackSection>
-                </div>
-              ))}
+                    <CardStackSection index={index} totalCards={sections.length}>
+                      <div className="bg-forest">
+                        <Component />
+                      </div>
+                    </CardStackSection>
+                  </div>
+                );
+              })}
             </div>
           </main>
           
