@@ -13,14 +13,23 @@ const navItems = [
 export default function Navbar({ isLoaded }) {
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious();
+    // Hide navbar on scroll down, show on scroll up
     if (latest > previous && latest > 150 && !menuOpen) {
       setHidden(true);
     } else {
       setHidden(false);
+    }
+
+    // Handle transparency based on scroll position
+    if (latest > 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
     }
   });
 
@@ -31,116 +40,168 @@ export default function Navbar({ isLoaded }) {
     }, 50);
   };
 
+  const navItemVariants = {
+    initial: { opacity: 0, y: 30, filter: 'blur(10px)' },
+    animate: (i) => ({
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        delay: i * 0.1 + 0.2,
+        duration: 0.8,
+        ease: [0.215, 0.61, 0.355, 1],
+      },
+    }),
+    exit: (i) => ({
+      opacity: 0,
+      y: 20,
+      filter: 'blur(5px)',
+      transition: {
+        delay: (navItems.length - i) * 0.05,
+        duration: 0.4,
+        ease: [0.645, 0.045, 0.355, 1],
+      },
+    }),
+  };
+
   return (
     <>
-      {/* ── Desktop pill navbar ─────────────────────────────────────── */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-40 hidden md:flex justify-center mt-6 px-4"
+      {/* ── Universal Top Bar ─────────────────────────────────────────── */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
         animate={{
           y: isLoaded && !hidden ? 0 : -100,
           opacity: isLoaded && !hidden ? 1 : 0,
         }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        <div className="flex items-center gap-8 px-8 py-4 bg-[#111A16]/60 backdrop-blur-md rounded-full border border-titli/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-          <a href="#hero" className="flex items-center justify-center shrink-0" onClick={(e) => { e.preventDefault(); scrollTo('#hero'); }}>
-            <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-titli/30 hover:scale-110 transition-transform" />
-          </a>
-          <div className="w-px h-6 bg-white/10" />
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-white/70 hover:text-titli text-xs uppercase tracking-widest font-sans transition-colors duration-300"
-              onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
-            >
-              {item.name}
-            </a>
-          ))}
-        </div>
-      </motion.nav>
-
-      {/* ── Mobile top bar ──────────────────────────────────────────── */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-50 md:hidden flex items-center justify-between px-5 py-4"
-        initial={{ y: -60, opacity: 0 }}
-        animate={{
-          y: isLoaded ? 0 : -60,
-          opacity: isLoaded ? 1 : 0,
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          background: isScrolled ? 'rgba(11,20,17,0.7)' : 'transparent',
+          backdropFilter: isScrolled ? 'blur(20px)' : 'blur(0px)',
+          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'blur(0px)',
+          borderBottom: isScrolled ? '1px solid rgba(229, 252, 84, 0.05)' : '1px solid transparent',
         }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        style={{ background: 'rgba(11,20,17,0.75)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
       >
         {/* Logo */}
-        <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('#hero'); }} className="flex items-center gap-3">
-          <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-titli/30" />
-          <span className="font-serif italic text-titli text-lg">Titli</span>
+        <a 
+          href="#hero" 
+          onClick={(e) => { e.preventDefault(); scrollTo('#hero'); }} 
+          className="group flex items-center gap-4 cursor-pointer"
+        >
+          <div className="relative">
+            <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-full border border-titli/20 group-hover:border-titli/50 transition-all duration-500 group-hover:scale-105" />
+            <div className="absolute inset-0 rounded-full bg-titli/10 scale-0 group-hover:scale-125 transition-transform duration-700 blur-xl -z-10" />
+          </div>
+          <span className="font-serif italic text-titli text-xl md:text-2xl tracking-tighter opacity-90 group-hover:opacity-100 transition-opacity">Titli</span>
         </a>
 
-        {/* Hamburger */}
+        {/* Hamburger Menu Toggle */}
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
-          className="flex flex-col justify-center items-center w-10 h-10 gap-[5px] rounded-full border border-white/10 hover:border-titli/30 transition-colors"
+          className="group relative flex flex-col justify-center items-center w-12 h-12 gap-[6px] rounded-full hover:bg-white/5 transition-all duration-500 overflow-hidden"
         >
           <motion.span
-            className="block w-5 h-px bg-white/70 origin-center"
-            animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 6 : 0 }}
+            className="block w-6 h-[1.5px] bg-titli/80 origin-center"
+            animate={{ 
+              rotate: menuOpen ? 45 : 0, 
+              y: menuOpen ? 4 : 0,
+              width: menuOpen ? '24px' : '20px'
+            }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <motion.span
+            className="block w-4 h-[1.5px] bg-titli/80"
+            animate={{ 
+              opacity: menuOpen ? 0 : 1,
+              x: menuOpen ? 20 : 0
+            }}
             transition={{ duration: 0.3 }}
           />
           <motion.span
-            className="block w-5 h-px bg-white/70"
-            animate={{ opacity: menuOpen ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
+            className="block w-6 h-[1.5px] bg-titli/80 origin-center"
+            animate={{ 
+              rotate: menuOpen ? -45 : 0, 
+              y: menuOpen ? -4 : 0,
+              width: menuOpen ? '24px' : '28px'
+            }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           />
-          <motion.span
-            className="block w-5 h-px bg-white/70 origin-center"
-            animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -6 : 0 }}
-            transition={{ duration: 0.3 }}
-          />
+          
+          {/* Hover pulse effect */}
+          <div className="absolute inset-0 bg-titli/5 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full -z-10" />
         </button>
       </motion.div>
 
-      {/* ── Mobile fullscreen menu overlay ─────────────────────────── */}
+      {/* ── Fullscreen Overlay Menu ──────────────────────────────────── */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 md:hidden flex flex-col"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            style={{ background: 'rgba(8,14,11,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'linear' }}
           >
-            {/* Decorative top line */}
-            <div className="w-full h-px bg-linear-to-r from-transparent via-titli/20 to-transparent mt-[72px]" />
+            {/* Background Blur Overlay */}
+            <motion.div 
+               className="absolute inset-0 bg-[#080E0B]/95 backdrop-blur-2xl"
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+            />
 
-            <nav className="flex flex-col items-center justify-center flex-1 gap-2 px-8 py-10">
+            {/* Menu Items */}
+            <nav className="relative z-10 flex flex-col items-center gap-4 md:gap-8 pt-30 pb-24 px-10">
               {navItems.map((item, i) => (
-                <motion.a
+                <motion.div
                   key={item.name}
-                  href={item.href}
-                  className="w-full text-center py-5 font-serif text-3xl text-white/80 hover:text-titli transition-colors duration-300 border-b border-white/5"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 + 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  custom={i}
+                  variants={navItemVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="overflow-hidden group"
                 >
-                  {item.name}
-                </motion.a>
+                  <a
+                    href={item.href}
+                    className="relative block py-2 px-10 text-center"
+                    onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  >
+                    {/* Hover Glow Effect */}
+                    <span className="absolute inset-0 bg-titli/0 group-hover:bg-titli/5 blur-2xl rounded-full transition-all duration-500 scale-0 group-hover:scale-110" />
+                    
+                    <span className="relative flex flex-col items-center">
+                      <span className="font-serif text-4xl md:text-6xl text-white/40 group-hover:text-titli transition-all duration-500 italic lowercase tracking-tighter">
+                        {item.name}
+                      </span>
+                      
+                      {/* Animated underline */}
+                      <span className="block w-0 h-px bg-titli/30 mt-2 group-hover:w-full transition-all duration-700 ease-out" />
+                      
+                      {/* Numbering (aesthetic) */}
+                      <span className="absolute -left-4 top-1/2 -translate-y-1/2 font-sans text-[10px] tracking-[0.4em] text-titli/10 group-hover:text-titli/40 transition-colors uppercase">
+                        0{i + 1}
+                      </span>
+                    </span>
+                  </a>
+                </motion.div>
               ))}
             </nav>
 
-            {/* Bottom hint */}
-            <motion.p
-              className="text-center text-[10px] uppercase tracking-[0.3em] text-white/20 font-sans pb-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+            {/* Bottom Right Footer Info */}
+            <motion.div 
+              className="absolute bottom-6 right-6 md:bottom-12 md:right-12 z-10 flex flex-col items-end gap-2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
             >
-              Titli Foundation
-            </motion.p>
+              <div className="w-12 h-px bg-titli/20" />
+              <p className="text-[9px] md:text-xs uppercase tracking-[0.4em] text-white/20 font-sans text-right">
+                Titli Foundation<br/>
+                <span className="text-titli/40">ESTD 2021</span>
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
