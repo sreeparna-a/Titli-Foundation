@@ -67,11 +67,13 @@ export default function Navbar() {
         <a 
           href="#hero" 
           onClick={(e) => { e.preventDefault(); scrollTo('#hero'); }} 
-          className="group flex items-center gap-4 cursor-pointer"
+          className="group flex items-center gap-3 cursor-pointer"
         >
-          <div className="relative">
-            <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-full border border-titli/20 group-hover:border-titli/50 transition-all duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 rounded-full bg-titli/10 scale-0 group-hover:scale-125 transition-transform duration-700 blur-xl -z-10" />
+          <div className="relative group">
+            <div className="w-10 h-10 rounded-full border border-titli overflow-hidden shadow-[0_0_15px_rgba(229,252,84,0.3)] group-hover:shadow-[0_0_25px_rgba(229,252,84,0.5)] transition-all duration-500">
+              <img src="/logo-rounded.png" alt="Logo" className="w-full h-full object-cover origin-center transition-transform duration-500 scale-125 group-hover:scale-150" />
+            </div>
+            <div className="absolute inset-0 rounded-full bg-titli/10 scale-0 group-hover:scale-150 transition-transform duration-700 blur-2xl -z-10" />
           </div>
           <span className="font-serif italic text-titli text-xl md:text-2xl tracking-tighter opacity-90 group-hover:opacity-100 transition-opacity">Titli</span>
         </a>

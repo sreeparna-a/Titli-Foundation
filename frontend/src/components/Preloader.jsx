@@ -60,14 +60,15 @@ export default function Preloader({ onComplete }) {
       >
         <motion.div
            animate={{ filter: ["drop-shadow(0px 0px 0px rgba(229, 252, 84, 0))", "drop-shadow(0px 0px 20px rgba(229, 252, 84, 0.4))", "drop-shadow(0px 0px 0px rgba(229, 252, 84, 0))"] }}
-           transition={{ duration: 2, repeat: Infinity }}
-           className="w-32 md:w-48 mb-8 overflow-hidden rounded-full border border-titli/20"
+           className="mb-8"
         >
-          <img 
-            src="/logo.jpg" 
-            alt="Titli Foundation Logo"
-            className="w-full h-full object-cover"
-          />
+          <div className="w-32 h-32 md:w-48 md:h-48 overflow-hidden rounded-full border border-titli shadow-[0_0_30px_rgba(229,252,84,0.4)]">
+            <img 
+              src="/logo-rounded.png" 
+              alt="Titli Foundation Logo"
+              className="w-full h-full object-cover scale-125"
+            />
+          </div>
         </motion.div>
         
         <div className="h-px w-64 bg-[#1a251e] relative overflow-hidden">
