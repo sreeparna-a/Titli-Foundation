@@ -7,6 +7,7 @@ const navItems = [
   { name: 'Events', href: '#events' },
   { name: 'Members', href: '#members' },
   { name: 'Gallery', href: '#gallery' },
+  { name: 'Contact', href: '#contact' },
 ];
 
 export default function Navbar({ isLoaded }) {

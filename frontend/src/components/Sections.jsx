@@ -142,3 +142,46 @@ export function Gallery() {
     </section>
   );
 }
+
+export function Contact() {
+  return (
+    <section id="contact" className="relative w-full py-24 px-4 sm:px-8 md:px-24 mb-24 border-t border-white/10 mt-24 text-center">
+       <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="flex flex-col items-center mb-16"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <span className="text-xs uppercase tracking-[0.3em] font-sans text-accent-orange mb-4">05</span>
+            <h2 className="text-4xl md:text-6xl font-serif text-white mb-6">Let's Create Together</h2>
+            <p className="font-sans text-white/50 text-lg">Reach out for collaborations, inquiries, or just to say hello.</p>
+          </motion.div>
+
+          <motion.form 
+            className="flex flex-col gap-6 max-w-xl mx-auto text-left"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+             <div className="flex flex-col gap-2">
+                <label className="text-xs uppercase tracking-widest text-white/40">Name</label>
+                <input type="text" className="bg-transparent border-b border-white/20 pb-2 text-white focus:outline-none focus:border-titli transition-colors" placeholder="Your name" />
+             </div>
+             <div className="flex flex-col gap-2 mt-4">
+                <label className="text-xs uppercase tracking-widest text-white/40">Email</label>
+                <input type="email" className="bg-transparent border-b border-white/20 pb-2 text-white focus:outline-none focus:border-titli transition-colors" placeholder="your@email.com" />
+             </div>
+             <div className="flex flex-col gap-2 mt-4">
+                <label className="text-xs uppercase tracking-widest text-white/40">Message</label>
+                <textarea rows="4" className="bg-transparent border-b border-white/20 pb-2 text-white focus:outline-none focus:border-titli transition-colors resize-none" placeholder="How can we help?"></textarea>
+             </div>
+             <button type="button" className="mt-8 py-4 px-8 border border-white/20 text-white font-sans text-sm uppercase tracking-widest hover:bg-white hover:text-forest transition-colors w-max mx-auto duration-300">
+                Send Message
+             </button>
+          </motion.form>
+       </div>
+    </section>
+  );
+}

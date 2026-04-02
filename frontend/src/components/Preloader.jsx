@@ -55,13 +55,17 @@ export default function Preloader({ onComplete }) {
         }}
         transition={{ duration: 0.8 }}
       >
-        <motion.h1 
-          className="text-6xl md:text-8xl text-titli font-serif italic tracking-widest mb-6"
-          animate={{ textShadow: ["0px 0px 0px #E5FC54", "0px 0px 20px #E5FC54", "0px 0px 0px #E5FC54"] }}
-          transition={{ duration: 2, repeat: Infinity }}
+        <motion.div
+           animate={{ filter: ["drop-shadow(0px 0px 0px rgba(229, 252, 84, 0))", "drop-shadow(0px 0px 20px rgba(229, 252, 84, 0.4))", "drop-shadow(0px 0px 0px rgba(229, 252, 84, 0))"] }}
+           transition={{ duration: 2, repeat: Infinity }}
+           className="w-32 md:w-48 mb-8 overflow-hidden rounded-full border border-titli/20"
         >
-          Titli
-        </motion.h1>
+          <img 
+            src="/logo.jpg" 
+            alt="Titli Foundation Logo"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
         
         <div className="h-px w-64 bg-[#1a251e] relative overflow-hidden">
           <motion.div 

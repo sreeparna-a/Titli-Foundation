@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ThreadedLine from './components/ThreadedLine';
 import About from './components/About';
-import { Events, Members, Gallery } from './components/Sections';
+import { Events, Members, Gallery, Contact } from './components/Sections';
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -13,6 +13,7 @@ export default function App() {
   return (
     <SmoothScroller>
       <div className="bg-forest min-h-screen text-white font-sans selection:bg-titli selection:text-forest">
+        <div className="noise-overlay"></div>
         {!isLoaded && <Preloader onComplete={() => setIsLoaded(true)} />}
         
         <div className="relative overflow-hidden sm:overflow-visible">
@@ -26,6 +27,7 @@ export default function App() {
               <Events />
               <Members />
               <Gallery />
+              <Contact />
             </div>
           </main>
           
