@@ -1,1 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-forest: #0B1411;
+  --color-titli: #E5FC54;
+  --color-accent-orange: #d17c26;
+  --color-accent-green: #297a51;
+  
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Outfit", sans-serif;
+}
+
+:root {
+  background-color: var(--color-forest);
+  color: var(--color-titli);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-forest);
+}
+::-webkit-scrollbar-thumb {
+  background: #1c2b24;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a3b32;
+}
+
+/* Utilities for aesthetic effects */
+.glow-path {
+  filter: drop-shadow(0 0 10px rgba(229, 252, 84, 0.4));
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1.5px var(--color-titli);
+  color: transparent;
+}
+
+.text-stroke-hover:hover {
+  color: var(--color-titli);
+  transition: color 0.4s ease;
+}
