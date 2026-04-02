@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import Preloader from './components/Preloader';
 import SmoothScroller from './components/SmoothScroller';
 import Navbar from './components/Navbar';
@@ -45,6 +46,14 @@ export default function App() {
     <SmoothScroller>
       <div className="bg-forest min-h-screen text-white font-sans selection:bg-titli selection:text-forest">
         <div className="noise-overlay"></div>
+        <Toaster position="bottom-right" gutter={8} toastOptions={{
+          style: {
+            background: '#0c1410',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            fontFamily: 'serif',
+          }
+        }} />
         {!isLoaded && <Preloader onComplete={() => setIsLoaded(true)} />}
         
         <div className="relative overflow-hidden sm:overflow-visible">

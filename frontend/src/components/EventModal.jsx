@@ -124,13 +124,13 @@ function PhotoCarousel({ photos, accentColor }) {
         <>
           <button
             onClick={() => go((active - 1 + photos.length) % photos.length)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 hover:border-white/30 flex items-center justify-center text-white/60 hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 md:hover:border-white/30 max-md:border-white/30 flex items-center justify-center text-white/80 md:text-white/60 md:hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
           >
             ←
           </button>
           <button
             onClick={() => go((active + 1) % photos.length)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 hover:border-white/30 flex items-center justify-center text-white/60 hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 md:hover:border-white/30 max-md:border-white/30 flex items-center justify-center text-white/80 md:text-white/60 md:hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
           >
             →
           </button>
@@ -327,7 +327,7 @@ export default function EventModal({ event, onClose }) {
                   )}
                   <button
                     onClick={onClose}
-                    className="text-[10px] uppercase tracking-[0.2em] font-sans text-white/30 hover:text-white transition-colors duration-300"
+                    className="text-[10px] uppercase tracking-[0.2em] font-sans text-white/60 md:text-white/30 md:hover:text-white transition-colors duration-300"
                   >
                     Close
                   </button>

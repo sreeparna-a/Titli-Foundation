@@ -155,12 +155,12 @@ export default function Navbar() {
                     <span className="absolute inset-0 bg-titli/0 group-hover:bg-titli/5 blur-2xl rounded-full transition-all duration-500 scale-0 group-hover:scale-110" />
                     
                     <span className="relative flex flex-col items-center">
-                      <span className="font-serif text-4xl md:text-6xl text-white/40 group-hover:text-titli transition-all duration-500 italic lowercase tracking-tighter">
+                      <span className="font-serif text-4xl md:text-6xl text-white/80 md:text-white/40 md:group-hover:text-titli transition-all duration-500 italic lowercase tracking-tighter">
                         {item.name}
                       </span>
                       
                       {/* Animated underline */}
-                      <span className="block w-0 h-px bg-titli/30 mt-2 group-hover:w-full transition-all duration-700 ease-out" />
+                      <span className="block h-px bg-titli/30 mt-2 w-full md:w-0 md:group-hover:w-full transition-all duration-700 ease-out" />
                       
                       {/* Numbering (aesthetic) */}
                       <span className="absolute -left-4 top-1/2 -translate-y-1/2 font-sans text-[10px] tracking-[0.4em] text-titli/10 group-hover:text-titli/40 transition-colors uppercase">

@@ -106,7 +106,7 @@ export default function About() {
           transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
           An independent{' '}
-          <span className="text-titli italic text-stroke-hover transition-colors cursor-default">
+          <span className="text-titli italic md:text-stroke md:text-stroke-hover transition-colors cursor-default">
             cultural
           </span>{' '}
           community bridging the gap between raw artistic expression and social impact.

@@ -10,6 +10,8 @@ import {
   useVelocity,
 } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import { sendMessage } from '../api/api';
 import EventModal from './EventModal';
 
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
@@ -222,13 +224,10 @@ export function Events() {
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && setSelectedEvent(event)}
                 >
-                  {/* Hover Background Fill */}
-                  <motion.div
-                    className="absolute inset-0 z-0"
+                  {/* Background Fill (visible on mobile, hover on desktop) */}
+                  <div
+                    className="absolute inset-0 z-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500"
                     style={{ background: `${event.accentColor}08` }}
-                    initial={{ scaleX: 0, originX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.4, ease: 'easeOut' }}
                   />
 
                   {/* Accent line on left */}
@@ -251,12 +250,12 @@ export function Events() {
                   </div>
 
                   <div className="relative z-10 mt-2 md:mt-0 text-right pr-4 flex items-center gap-3 self-start md:self-auto pl-4 md:pl-0">
-                    <span className="text-sm md:text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
+                    <span className="text-sm md:text-lg font-sans text-white/60 md:text-white/40 md:group-hover:text-white transition-colors duration-500">
                       {event.date}
                     </span>
                     {/* "View Details" label on hover */}
                     <motion.span
-                      className="hidden md:block text-[9px] uppercase tracking-[0.25em] font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 py-1 rounded-full"
+                      className="text-[9px] uppercase tracking-[0.25em] font-sans opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 px-3 py-1 rounded-full"
                       style={{
                         color: event.accentColor,
                         border: `1px solid ${event.accentColor}40`,
@@ -266,7 +265,7 @@ export function Events() {
                       View Details
                     </motion.span>
                     <motion.span
-                      className="text-sm font-sans opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="text-sm font-sans opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                       style={{ color: event.accentColor }}
                     >
                       →
@@ -344,26 +343,26 @@ export function Members() {
                 <img
                   src={member.img}
                   alt={member.name}
-                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-60 group-hover:opacity-100"
+                  className="w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
                 />
 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-forest via-forest/30 to-transparent group-hover:via-forest/10 transition-all duration-700" />
+                <div className="absolute inset-0 bg-linear-to-t from-forest via-forest/10 md:via-forest/30 md:group-hover:via-forest/10 transition-all duration-700" />
 
                 {/* Corner ornament */}
                 <motion.div
-                  className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/0 group-hover:border-titli/60 transition-colors duration-500"
+                  className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/60 md:border-titli/0 md:group-hover:border-titli/60 transition-colors duration-500"
                 />
                 <motion.div
-                  className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/0 group-hover:border-titli/60 transition-colors duration-500"
+                  className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/60 md:border-titli/0 md:group-hover:border-titli/60 transition-colors duration-500"
                 />
 
                 {/* Info */}
                 <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                  <div className="border-t border-white/10 pt-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                  <div className="border-t border-white/10 pt-4 translate-y-0 md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500">
                     <h4 className="font-serif text-xl text-white leading-tight">{member.name}</h4>
                     <p
-                      className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500"
                     >
                       {member.role}
                     </p>
@@ -601,7 +600,7 @@ export function Gallery() {
                   <img
                     src={img.src}
                     alt={img.alt}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-60 group-hover:opacity-100"
+                    className="absolute inset-0 w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
                   />
 
                   {/* Gradient overlay */}
@@ -610,23 +609,22 @@ export function Gallery() {
                   {/* Category pill */}
                   <div className="absolute top-4 left-4 z-10">
                     <span
-                      className="text-[9px] uppercase tracking-[0.25em] font-sans px-3 py-1 rounded-full border border-titli/0 bg-black/40 text-white/40
-                      group-hover:border-titli/50 group-hover:text-titli group-hover:bg-black/60 transition-all duration-500"
+                      className="text-[9px] uppercase tracking-[0.25em] font-sans px-3 py-1 rounded-full border border-titli/50 text-titli bg-black/60 md:border-titli/0 md:text-white/40 md:bg-black/40 md:group-hover:border-titli/50 md:group-hover:text-titli md:group-hover:bg-black/60 transition-all duration-500"
                     >
                       {img.category}
                     </span>
                   </div>
 
                   {/* Caption */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10 translate-y-0 md:translate-y-3 opacity-100 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-500 ease-out">
                     <div className="border-t border-white/10 pt-3">
                       <p className="text-[11px] uppercase tracking-[0.3em] text-white/80 font-sans">{img.caption}</p>
                     </div>
                   </div>
 
                   {/* Corner accents */}
-                  <div className="absolute top-3 right-3 w-6 h-6 border-t border-r border-white/0 group-hover:border-titli/50 transition-all duration-700" />
-                  <div className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-white/0 group-hover:border-titli/50 transition-all duration-700" />
+                  <div className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/50 md:border-white/0 md:group-hover:border-titli/50 transition-all duration-700" />
+                  <div className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/50 md:border-white/0 md:group-hover:border-titli/50 transition-all duration-700" />
 
                   {/* Subtle index number */}
                   <div className="absolute top-4 right-4 z-10 text-[10px] font-sans text-white/10 group-hover:text-white/30 transition-colors duration-500">
@@ -673,6 +671,33 @@ export function Gallery() {
 
 // ─── Contact Section ───────────────────────────────────────────────────────
 export function Contact() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.error('All fields are required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await sendMessage(formData);
+      toast.success("Message sent! We'll get back to you soon.");
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      toast.error(error.error || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section
       id="contact"
@@ -793,10 +818,10 @@ export function Contact() {
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-titli/5 blur-[100px] rounded-full pointer-events-none z-0" />
 
-          <form className="relative z-10 flex flex-col gap-5 md:gap-6 w-full h-full p-6 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
+          <form onSubmit={handleSubmit} className="relative z-10 flex flex-col gap-5 md:gap-6 w-full h-full p-6 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
             {[
-              { label: 'Your Name', type: 'text', placeholder: 'John Doe' },
-              { label: 'Email Address', type: 'email', placeholder: 'hello@example.com' },
+              { label: 'Your Name', type: 'text', placeholder: 'John Doe', name: 'name' },
+              { label: 'Email Address', type: 'email', placeholder: 'hello@example.com', name: 'email' },
             ].map((field, i) => (
               <motion.div
                 key={field.label}
@@ -809,6 +834,10 @@ export function Contact() {
                 <label className="text-[10px] uppercase tracking-widest text-white/40">{field.label}</label>
                 <input
                   type={field.type}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
                   className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans"
                   placeholder={field.placeholder}
                 />
@@ -824,6 +853,10 @@ export function Contact() {
             >
               <label className="text-[10px] uppercase tracking-widest text-white/40">Message</label>
               <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
                 rows="5"
                 className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans resize-none"
                 placeholder="Tell us about your project..."
@@ -831,18 +864,21 @@ export function Contact() {
             </motion.div>
 
             <motion.button
-              type="button"
-              className="mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isSubmitting}
+              className={`mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={isSubmitting ? {} : { scale: 1.02 }}
+              whileTap={isSubmitting ? {} : { scale: 0.98 }}
             >
-              <span className="relative z-10">Send Message</span>
-              <motion.div
-                className="absolute inset-0 bg-titli origin-left"
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-              />
+              <span className="relative z-10">{isSubmitting ? 'Sending...' : 'Send Message'}</span>
+              {!isSubmitting && (
+                <motion.div
+                  className="absolute inset-0 bg-titli origin-left"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
+              )}
             </motion.button>
           </form>
         </motion.div>
