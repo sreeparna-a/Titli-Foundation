@@ -34,6 +34,10 @@ export default function Navbar({ isLoaded }) {
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div className="flex items-center gap-8 px-8 py-4 bg-[#111A16]/60 backdrop-blur-md rounded-full border border-titli/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+        <a href="#hero" className="flex items-center justify-center shrink-0">
+           <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-titli/30 hover:scale-110 transition-transform" />
+        </a>
+        <div className="w-px h-6 bg-white/10"></div>
         {navItems.map((item) => (
           <a
             key={item.name}
