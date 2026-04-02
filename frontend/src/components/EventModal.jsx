@@ -1,15 +1,27 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 // ── Simple focus trap + scroll lock ──────────────────────────────────────────
 function useModalEffects(isOpen) {
   useEffect(() => {
     if (isOpen) {
+      // Pause Lenis so wheel/touchpad scrolling doesn't move the page.
+      window.__lenisInstance?.stop?.();
+
+      // Lock scroll on the document (covers browsers where `overflow: hidden`
+      // on `body` alone isn't enough).
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+      document.documentElement.style.overflow = 'hidden';
+
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        window.__lenisInstance?.start?.();
+      };
     }
-    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 }
 
@@ -149,25 +161,29 @@ export default function EventModal({ event, onClose }) {
   useModalEffects(isOpen);
   const closeOnBackdrop = (e) => { if (e.target === e.currentTarget) onClose(); };
 
-  return (
+  const portalTarget = typeof document !== 'undefined' ? document.body : null;
+
+  const modal = (
     <AnimatePresence>
       {isOpen && event && (
         <motion.div
-          className="fixed inset-0 z-9000 flex items-end sm:items-center justify-center p-0 sm:p-6"
+          className="fixed inset-0 z-100000 flex items-center justify-center p-4 sm:p-6"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
           onClick={closeOnBackdrop}
-          style={{ background: 'rgba(5,9,8,0.85)', backdropFilter: 'blur(16px)' }}
+          style={{
+            background: 'rgba(5,9,8,0.85)',
+            backdropFilter: 'blur(16px)',
+          }}
         >
           {/* Panel */}
           <motion.div
-            className="relative w-full sm:max-w-3xl lg:max-w-4xl mx-auto rounded-t-3xl sm:rounded-2xl overflow-hidden"
+            className="relative w-full sm:max-w-3xl lg:max-w-4xl mx-auto rounded-2xl overflow-hidden"
             style={{
               background: 'linear-gradient(145deg, #0c1410 0%, #0a120e 100%)',
               border: '1px solid rgba(255,255,255,0.06)',
-              maxHeight: '92vh',
             }}
             variants={panelVariants}
             initial="hidden"
@@ -193,7 +209,11 @@ export default function EventModal({ event, onClose }) {
             />
 
             {/* Scrollable inner */}
-            <div className="overflow-y-auto modal-scrollbar" style={{ maxHeight: '92vh' }}>
+            <div
+              className="overflow-y-auto modal-scrollbar max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)]"
+              data-lenis-prevent
+              style={{ overscrollBehavior: 'contain', touchAction: 'pan-y' }}
+            >
               <motion.div
                 className="p-6 sm:p-10 flex flex-col gap-8"
                 variants={contentVariants}
@@ -316,4 +336,6 @@ export default function EventModal({ event, onClose }) {
       )}
     </AnimatePresence>
   );
+
+  return portalTarget ? createPortal(modal, portalTarget) : modal;
 }

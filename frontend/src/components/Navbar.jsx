@@ -1,4 +1,4 @@
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 const navItems = [
@@ -11,27 +11,7 @@ const navItems = [
 ];
 
 export default function Navbar({ isLoaded }) {
-  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollY } = useScroll();
-
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    const previous = scrollY.getPrevious();
-    // Hide navbar on scroll down, show on scroll up
-    if (latest > previous && latest > 150 && !menuOpen) {
-      setHidden(true);
-    } else {
-      setHidden(false);
-    }
-
-    // Handle transparency based on scroll position
-    if (latest > 50) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  });
 
   const scrollTo = (href) => {
     setMenuOpen(false);
@@ -70,16 +50,14 @@ export default function Navbar({ isLoaded }) {
       <motion.div
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
-        animate={{
-          y: isLoaded && !hidden ? 0 : -100,
-          opacity: isLoaded && !hidden ? 1 : 0,
-        }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          background: isScrolled ? 'rgba(11,20,17,0.7)' : 'transparent',
-          backdropFilter: isScrolled ? 'blur(20px)' : 'blur(0px)',
-          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'blur(0px)',
-          borderBottom: isScrolled ? '1px solid rgba(229, 252, 84, 0.05)' : '1px solid transparent',
+          // Always visible navbar, but fully transparent.
+          background: 'transparent',
+          backdropFilter: 'blur(0px)',
+          WebkitBackdropFilter: 'blur(0px)',
+          borderBottom: 'none',
         }}
       >
         {/* Logo */}

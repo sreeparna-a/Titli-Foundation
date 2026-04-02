@@ -10,6 +10,9 @@ export default function SmoothScroller({ children }) {
       wheelMultiplier: 1.2,
     });
 
+    // Expose instance so modals can pause smooth scrolling while open.
+    window.__lenisInstance = lenis;
+
     let rafId;
 
     function raf(time) {
@@ -22,6 +25,7 @@ export default function SmoothScroller({ children }) {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      if (window.__lenisInstance === lenis) delete window.__lenisInstance;
     };
   }, []);
 
