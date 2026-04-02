@@ -26,7 +26,7 @@ body {
 
 /* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-forest);
@@ -36,14 +36,16 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a3b32;
+  background: var(--color-titli);
 }
 
-/* Utilities for aesthetic effects */
+/* ─── Glow for the threaded path ─────────────────────────────────── */
 .glow-path {
-  filter: drop-shadow(0 0 10px rgba(229, 252, 84, 0.4));
+  filter: drop-shadow(0 0 8px rgba(229, 252, 84, 0.5))
+          drop-shadow(0 0 24px rgba(229, 252, 84, 0.2));
 }
 
+/* ─── Hollow text stroke ─────────────────────────────────────────── */
 .text-stroke {
   -webkit-text-stroke: 1.5px var(--color-titli);
   color: transparent;
@@ -54,6 +56,7 @@ body {
   transition: color 0.4s ease;
 }
 
+/* ─── Noise overlay ──────────────────────────────────────────────── */
 .noise-overlay {
   position: fixed;
   top: 0;
@@ -62,6 +65,52 @@ body {
   height: 100vh;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.04;
   background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E") repeat;
+}
+
+/* ─── Card Stack shadows ─────────────────────────────────────────── */
+.card-stack-item {
+  box-shadow: 
+    0 -4px 40px rgba(0, 0, 0, 0.5),
+    0 -1px 0px rgba(255, 255, 255, 0.03);
+}
+
+/* ─── Clip-path reveal keyframe ──────────────────────────────────── */
+@keyframes clip-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+/* ─── Floating ambient glow animation ────────────────────────────── */
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0) scale(1);   opacity: 0.6; }
+  50%       { transform: translateY(-20px) scale(1.05); opacity: 1; }
+}
+
+.ambient-glow {
+  animation: float-glow 8s ease-in-out infinite;
+}
+
+/* ─── Section transition helper ──────────────────────────────────── */
+.section-enter {
+  will-change: transform, opacity;
+}
+
+/* ─── Animated underline ─────────────────────────────────────────── */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-titli);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  width: 100%;
 }

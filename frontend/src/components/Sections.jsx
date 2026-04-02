@@ -1,48 +1,124 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { useState, useRef } from 'react';
 
+// ─── Shared Artsy Section Header ────────────────────────────────────────────
+function SectionTag({ number, color, label }) {
+  return (
+    <motion.div
+      className="flex items-center gap-4 mb-16"
+      initial={{ opacity: 0, x: -60, skewX: -10 }}
+      whileInView={{ opacity: 1, x: 0, skewX: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.span
+        className="text-xs uppercase tracking-[0.3em] font-sans"
+        style={{ color }}
+        initial={{ opacity: 0, scale: 0 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        {number}
+      </motion.span>
+      <motion.span
+        className="h-px"
+        style={{ backgroundColor: color }}
+        initial={{ width: 0 }}
+        whileInView={{ width: 48 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+      />
+      <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">{label}</h2>
+    </motion.div>
+  );
+}
+
+// ─── Reveal Text: clips from bottom like a curtain rising ──────────────────
+function RevealText({ children, delay = 0, className = '' }) {
+  return (
+    <div className="overflow-hidden">
+      <motion.div
+        className={className}
+        initial={{ y: '110%', rotateX: 12 }}
+        whileInView={{ y: '0%', rotateX: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 1.1, delay, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transformOrigin: 'bottom center', display: 'block' }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Data ─────────────────────────────────────────────────────────────────
 const eventsPlaceholder = [
-  { id: 1, title: 'The Autumn Monologues', type: 'Upcoming', date: 'Oct 24, 2026', color: 'text-titli' },
-  { id: 2, title: 'Shadows on Film', type: 'Previous', date: 'Aug 12, 2026', color: 'text-[#d17c26]' },
-  { id: 3, title: 'Canvas & Curtains', type: 'Previous', date: 'May 04, 2026', color: 'text-[#297a51]' },
+  { id: 1, title: 'The Autumn Monologues', type: 'Upcoming', date: 'Oct 24, 2026', color: 'text-titli', accentColor: '#E5FC54' },
+  { id: 2, title: 'Shadows on Film', type: 'Previous', date: 'Aug 12, 2026', color: 'text-[#d17c26]', accentColor: '#d17c26' },
+  { id: 3, title: 'Canvas & Curtains', type: 'Previous', date: 'May 04, 2026', color: 'text-[#297a51]', accentColor: '#297a51' },
 ];
 
+const members = [
+  { id: 1, name: 'Sreeparna Chatterjee', role: 'Artistic Director', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=80' },
+  { id: 2, name: 'Arjun Das', role: 'Theatre Director', img: 'https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=500&q=80' },
+  { id: 3, name: 'Mira Banerjee', role: 'Film Curator', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80' },
+  { id: 4, name: 'Rohan Sen', role: 'Visual Artist', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80' },
+];
+
+// ─── Events Section ────────────────────────────────────────────────────────
 export function Events() {
   const [filter, setFilter] = useState('All');
-  
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
+
   const filteredEvents = eventsPlaceholder.filter(
-    (event) => filter === 'All' || event.type === filter
+    (e) => filter === 'All' || e.type === filter
   );
 
   return (
-    <section id="events" className="relative w-full py-24 px-4 sm:px-8 md:px-24">
-      <div className="max-w-5xl mx-auto pl-0 sm:pl-12 lg:pl-24">
+    <section
+      id="events"
+      ref={sectionRef}
+      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+    >
+      {/* Subtle parallax ambient shape */}
+      <motion.div
+        className="absolute -right-40 top-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 70%)',
+          y: bgY,
+        }}
+      />
+
+      <div className="max-w-5xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
-          <motion.div 
-            className="flex items-center gap-4"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            <span className="text-xs uppercase tracking-[0.3em] font-sans text-accent-orange">02</span>
-            <span className="w-12 h-px bg-accent-orange"></span>
-            <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">Curtain Calls</h2>
-          </motion.div>
-          
-          <motion.div 
+          <SectionTag number="02" color="#d17c26" label="Curtain Calls" />
+
+          <motion.div
             className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            {['All', 'Upcoming', 'Previous'].map(f => (
-              <button 
+            {['All', 'Upcoming', 'Previous'].map((f) => (
+              <motion.button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`text-xs uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-colors ${filter === f ? 'bg-white text-forest' : 'text-white/50 hover:text-white'}`}
+                whileTap={{ scale: 0.94 }}
+                className={`text-xs uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-colors duration-400 ${
+                  filter === f ? 'bg-white text-forest' : 'text-white/50 hover:text-white'
+                }`}
               >
                 {f}
-              </button>
+              </motion.button>
             ))}
           </motion.div>
         </div>
@@ -50,192 +126,427 @@ export function Events() {
         <div className="flex flex-col border-t border-white/10 min-h-[300px]">
           <AnimatePresence mode="popLayout">
             {filteredEvents.map((event, i) => (
-              <motion.div 
+              <motion.div
                 key={event.id}
                 layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
-                transition={{ duration: 0.4 }}
+                initial={{ opacity: 0, y: 40, clipPath: 'inset(0 0 100% 0)' }}
+                animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
+                exit={{ opacity: 0, x: -40, filter: 'blur(8px)', transition: { duration: 0.3 } }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className="group flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/10 cursor-pointer overflow-hidden relative"
               >
-              {/* Hover Background Effect */}
-              <div className="absolute inset-0 bg-white/2 transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0" />
-              
-              <div className="relative z-10 flex flex-col md:w-1/2">
-                <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>{event.type}</span>
-                <h3 className="text-3xl md:text-5xl font-serif text-white group-hover:text-titli group-hover:translate-x-4 transition-all duration-500 ease-out">
-                  {event.title}
-                </h3>
-              </div>
-              
-              <div className="relative z-10 mt-4 md:mt-0 text-right">
-                <span className="text-lg font-sans text-white/40 group-hover:text-white transition-colors">{event.date}</span>
-              </div>
-            </motion.div>
+                {/* Hover Background Fill */}
+                <motion.div
+                  className="absolute inset-0 z-0"
+                  style={{ background: `${event.accentColor}08` }}
+                  initial={{ scaleX: 0, originX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
+
+                {/* Accent line on left */}
+                <motion.div
+                  className="absolute left-0 top-0 bottom-0 w-[2px] z-0"
+                  style={{ background: event.accentColor }}
+                  initial={{ scaleY: 0 }}
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
+                />
+
+                <div className="relative z-10 flex flex-col md:w-1/2 pl-4">
+                  <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>
+                    {event.type}
+                  </span>
+                  <h3 className="text-3xl md:text-5xl font-serif text-white group-hover:tracking-wider transition-all duration-700 ease-out">
+                    {event.title}
+                  </h3>
+                </div>
+
+                <div className="relative z-10 mt-4 md:mt-0 text-right pr-4 flex items-center gap-4">
+                  <span className="text-lg font-sans text-white/40 group-hover:text-white transition-colors duration-500">
+                    {event.date}
+                  </span>
+                  <motion.span
+                    className="text-sm font-sans opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: event.accentColor }}
+                  >
+                    →
+                  </motion.span>
+                </div>
+              </motion.div>
             ))}
           </AnimatePresence>
+        </div>
+
+        {/* Bottom narrative text */}
+        <motion.p
+          className="mt-12 text-[11px] uppercase tracking-[0.4em] text-white/20 font-sans"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, delay: 0.4 }}
+        >
+          Every performance leaves an echo
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+// ─── Members Section ───────────────────────────────────────────────────────
+export function Members() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
+  const bgX = useTransform(scrollYProgress, [0, 1], ['-5%', '5%']);
+
+  return (
+    <section
+      id="members"
+      ref={sectionRef}
+      className="relative w-full py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
+    >
+      {/* Ambient left glow */}
+      <motion.div
+        className="absolute -left-60 top-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(41,122,81,0.07) 0%, transparent 70%)',
+          x: bgX,
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
+        <SectionTag number="03" color="#297a51" label="The Ensemble" />
+
+        {/* Narrative blurb */}
+        <RevealText
+          delay={0.1}
+          className="text-white/30 font-sans text-sm uppercase tracking-[0.3em] mb-12"
+        >
+          The souls behind the curtain
+        </RevealText>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {members.map((member, i) => (
+            <motion.div
+              key={member.id}
+              className="relative group cursor-pointer"
+              initial={{ opacity: 0, y: 60, rotate: i % 2 === 0 ? -2 : 2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ delay: i * 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -8, transition: { duration: 0.35 } }}
+            >
+              <div className="relative aspect-3/4 overflow-hidden border border-white/5 group-hover:border-titli/30 transition-colors duration-500">
+                {/* Image */}
+                <img
+                  src={member.img}
+                  alt={member.name}
+                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-60 group-hover:opacity-100"
+                />
+
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-linear-to-t from-forest via-forest/30 to-transparent group-hover:via-forest/10 transition-all duration-700" />
+
+                {/* Corner ornament */}
+                <motion.div
+                  className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/0 group-hover:border-titli/60 transition-colors duration-500"
+                />
+                <motion.div
+                  className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/0 group-hover:border-titli/60 transition-colors duration-500"
+                />
+
+                {/* Info */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                  <div className="border-t border-white/10 pt-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <h4 className="font-serif text-xl text-white leading-tight">{member.name}</h4>
+                    <p className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      {member.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-export function Members() {
-  return (
-    <section id="members" className="relative w-full py-24 px-4 sm:px-8 md:px-24">
-       <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24">
-          <motion.div 
-            className="flex items-center gap-4 mb-16"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <span className="text-xs uppercase tracking-[0.3em] font-sans text-accent-green">03</span>
-            <span className="w-12 h-px bg-accent-green"></span>
-            <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">The Members</h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((item, i) => (
-              <motion.div
-                key={item}
-                className="relative group "
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-              >
-                <div className="aspect-3/4 bg-[#121d17] border border-white/5 p-4 flex flex-col justify-end overflow-hidden transition-all duration-500 hover:border-titli/30">
-                  <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=500&q=60')] bg-cover bg-center mix-blend-overlay group-hover:scale-110 group-hover:opacity-40 transition-all duration-700 blur-[2px] group-hover:blur-none" />
-                  <div className="relative z-10 w-full border-t border-white/10 pt-4 mt-auto opacity-80 group-hover:opacity-100 transition-opacity">
-                     <h4 className="font-serif text-xl text-white">Member Name</h4>
-                     <p className="font-sans text-xs uppercase tracking-widest text-titli mt-1">Director</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-       </div>
-    </section>
-  );
-}
-
+// ─── Gallery Section ───────────────────────────────────────────────────────
 export function Gallery() {
-  return (
-    <section id="gallery" className="relative w-full py-24 px-4 sm:px-8 md:px-24 mb-24">
-       <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24">
-          <motion.div 
-            className="flex items-center gap-4 mb-16"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <span className="text-xs uppercase tracking-[0.3em] font-sans text-titli">04</span>
-            <span className="w-12 h-px bg-titli"></span>
-            <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">Archives</h2>
-          </motion.div>
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {/* Large featured */}
-             <motion.div 
-              className="md:col-span-2 aspect-21/9 bg-linear-to-br from-[#1c2e24] to-[#0a110d] overflow-hidden group relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-             >
-                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80" alt="Theatre stage" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out opacity-60 group-hover:opacity-100" />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-1000" />
-             </motion.div>
-             <motion.div 
-              className="aspect-4/3 bg-linear-to-br from-[#1c2e24] to-[#0a110d] overflow-hidden group relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-             >
-                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80" alt="Culture" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out opacity-60 group-hover:opacity-100" />
-             </motion.div>
-             <motion.div 
-              className="aspect-4/3 bg-linear-to-br from-[#1c2e24] to-[#0a110d] overflow-hidden group relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-             >
-                <img src="https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&w=800&q=80" alt="Cinema" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out opacity-60 group-hover:opacity-100" />
-             </motion.div>
-          </div>
-       </div>
+  const parallaxY1 = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
+  const parallaxY2 = useTransform(scrollYProgress, [0, 1], ['0%', '10%']);
+  const parallaxY3 = useTransform(scrollYProgress, [0, 1], ['0%', '-8%']);
+
+  const galleryImages = [
+    {
+      src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
+      alt: 'Theatre stage',
+      caption: 'A stage lit with memory',
+      y: parallaxY1,
+      colSpan: 'md:col-span-2',
+      aspect: 'aspect-[21/9]',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+      alt: 'Culture',
+      caption: 'Voices that echo',
+      y: parallaxY2,
+      colSpan: '',
+      aspect: 'aspect-[4/3]',
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1594122230689-45899d9e6f69?auto=format&fit=crop&w=800&q=80',
+      alt: 'Cinema',
+      caption: 'Frames of feeling',
+      y: parallaxY3,
+      colSpan: '',
+      aspect: 'aspect-[4/3]',
+    },
+  ];
+
+  return (
+    <section
+      id="gallery"
+      ref={sectionRef}
+      className="relative w-full py-32 px-4 sm:px-8 md:px-24 mb-24 overflow-hidden"
+    >
+      <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
+        <SectionTag number="04" color="#E5FC54" label="Archives" />
+
+        {/* Narrative quote */}
+        <motion.div
+          className="mb-16 max-w-lg"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="font-serif text-2xl text-white/60 italic leading-relaxed">
+            "Art is not what you see, but what you make others see."
+          </p>
+          <span className="text-[10px] uppercase tracking-widest text-white/20 font-sans mt-3 block">
+            — Edgar Degas
+          </span>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {galleryImages.map((img, i) => (
+            <motion.div
+              key={i}
+              className={`${img.colSpan} ${img.aspect} overflow-hidden group relative`}
+              style={{ y: img.y }}
+              initial={{
+                opacity: 0,
+                clipPath: 'inset(0 100% 0 0)',
+              }}
+              whileInView={{
+                opacity: 1,
+                clipPath: 'inset(0 0% 0 0)',
+              }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 1.1, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out opacity-60 group-hover:opacity-100"
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-1000" />
+
+              {/* Caption Reveal */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                <p className="text-xs uppercase tracking-[0.3em] text-white/70 font-sans">{img.caption}</p>
+              </div>
+
+              {/* Corner accents */}
+              <div className="absolute top-3 left-3 w-5 h-5 border-t border-l border-white/0 group-hover:border-titli/60 transition-all duration-700" />
+              <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r border-white/0 group-hover:border-titli/60 transition-all duration-700" />
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
 
+// ─── Contact Section ───────────────────────────────────────────────────────
 export function Contact() {
   return (
-    <section id="contact" className="relative w-full py-24 px-4 sm:px-8 md:px-24 border-t border-white/10 mt-24 mb-12 overflow-hidden">
-       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 relative z-10 pl-0 sm:pl-12 lg:pl-24">
-          {/* Left Side: Info */}
-          <motion.div 
-            className="flex flex-col md:w-1/2"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-xs uppercase tracking-[0.3em] font-sans text-accent-orange">05</span>
-              <span className="w-12 h-px bg-accent-orange"></span>
-              <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">Say Hello</h2>
-            </div>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif text-white mb-6 leading-tight">Let's Create <br /><span className="italic text-white/50">Together</span></h2>
-            <p className="font-sans text-white/50 text-lg md:text-xl font-light mb-8 max-w-md">Reach out for collaborations, inquiries, or just to say hello. We are always looking for new stories to tell.</p>
-            
-            <div className="flex flex-col gap-6 mt-4">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">Email</p>
-                <a href="mailto:hello@titlifoundation.com" className="text-lg text-white hover:text-titli transition-colors duration-300 font-serif">titlifoundation@rediffmail.com</a>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">Social</p>
-                <div className="flex gap-6">
-                  <a href="#" className="text-sm text-white/70 hover:text-titli uppercase tracking-widest font-sans transition-colors duration-300">Instagram</a>
-                  <a href="#" className="text-sm text-white/70 hover:text-titli uppercase tracking-widest font-sans transition-colors duration-300">Twitter</a>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+    <section
+      id="contact"
+      className="relative w-full py-32 px-4 sm:px-8 md:px-24 border-t border-white/10 mt-16 mb-12 overflow-hidden"
+    >
+      {/* Background decoration */}
+      <motion.div
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5 }}
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-titli/3 blur-[120px] rounded-full" />
+      </motion.div>
 
-          {/* Right Side: Form */}
-          <motion.div 
-            className="md:w-1/2 relative flex flex-col"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 md:gap-24 relative z-10 pl-0 sm:pl-12 lg:pl-24">
+        {/* Left Side */}
+        <motion.div
+          className="flex flex-col md:w-1/2"
+          initial={{ opacity: 0, x: -60, filter: 'blur(10px)' }}
+          whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <span className="text-xs uppercase tracking-[0.3em] font-sans text-accent-orange">05</span>
+            <motion.span
+              className="h-px bg-accent-orange"
+              initial={{ width: 0 }}
+              whileInView={{ width: 48 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            />
+            <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">Say Hello</h2>
+          </div>
+
+          <div className="overflow-hidden mb-6">
+            <motion.h2
+              className="text-4xl md:text-6xl lg:text-7xl font-serif text-white leading-tight"
+              initial={{ y: '100%' }}
+              whileInView={{ y: '0%' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Let's Create{' '}
+              <br />
+              <span className="italic text-white/50">Together</span>
+            </motion.h2>
+          </div>
+
+          <motion.p
+            className="font-sans text-white/50 text-lg md:text-xl font-light mb-10 max-w-md"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
-             {/* Glow blob */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-titli/5 blur-[100px] rounded-full pointer-events-none z-0" />
-             
-             <form className="relative z-10 flex flex-col gap-6 w-full h-full p-8 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
-                <div className="flex flex-col gap-2">
-                   <label className="text-[10px] uppercase tracking-widest text-white/40">Your Name</label>
-                   <input type="text" className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans" placeholder="John Doe" />
-                </div>
-                <div className="flex flex-col gap-2 mt-2">
-                   <label className="text-[10px] uppercase tracking-widest text-white/40">Email Address</label>
-                   <input type="email" className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans" placeholder="hello@example.com" />
-                </div>
-                <div className="flex flex-col gap-2 mt-2">
-                   <label className="text-[10px] uppercase tracking-widest text-white/40">Message</label>
-                   <textarea rows="5" className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans resize-none" placeholder="Tell us about your project..."></textarea>
-                </div>
-                <button type="button" className="mt-6 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-colors w-full rounded-lg duration-300">
-                   Send Message
-                </button>
-             </form>
-          </motion.div>
-       </div>
+            Reach out for collaborations, inquiries, or just to say hello. We are always looking for new stories to tell.
+          </motion.p>
+
+          <div className="flex flex-col gap-8">
+            {[
+              { label: 'Email', value: 'titlifoundation@rediffmail.com', href: 'mailto:titlifoundation@rediffmail.com' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 + i * 0.1 }}
+              >
+                <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">{item.label}</p>
+                <a
+                  href={item.href}
+                  className="text-lg text-white hover:text-titli transition-colors duration-300 font-serif group flex items-center gap-2"
+                >
+                  {item.value}
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-titli text-sm">↗</span>
+                </a>
+              </motion.div>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <p className="text-[10px] uppercase tracking-widest text-white/30 mb-2 font-sans">Social</p>
+              <div className="flex gap-6">
+                {['Instagram', 'Twitter'].map((s) => (
+                  <a
+                    key={s}
+                    href="#"
+                    className="text-sm text-white/70 hover:text-titli uppercase tracking-widest font-sans transition-colors duration-300 group relative"
+                  >
+                    {s}
+                    <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-titli group-hover:w-full transition-all duration-400" />
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Right Side: Form */}
+        <motion.div
+          className="md:w-1/2 relative flex flex-col"
+          initial={{ opacity: 0, x: 60, filter: 'blur(10px)' }}
+          whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-titli/5 blur-[100px] rounded-full pointer-events-none z-0" />
+
+          <form className="relative z-10 flex flex-col gap-6 w-full h-full p-8 md:p-10 bg-[#0c1410]/80 border border-white/5 backdrop-blur-xl rounded-2xl shadow-2xl justify-between">
+            {[
+              { label: 'Your Name', type: 'text', placeholder: 'John Doe' },
+              { label: 'Email Address', type: 'email', placeholder: 'hello@example.com' },
+            ].map((field, i) => (
+              <motion.div
+                key={field.label}
+                className="flex flex-col gap-2"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+              >
+                <label className="text-[10px] uppercase tracking-widest text-white/40">{field.label}</label>
+                <input
+                  type={field.type}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans"
+                  placeholder={field.placeholder}
+                />
+              </motion.div>
+            ))}
+
+            <motion.div
+              className="flex flex-col gap-2"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <label className="text-[10px] uppercase tracking-widest text-white/40">Message</label>
+              <textarea
+                rows="5"
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-white placeholder-white/20 focus:outline-none focus:border-titli/50 focus:bg-white/10 transition-all duration-300 text-sm font-sans resize-none"
+                placeholder="Tell us about your project..."
+              />
+            </motion.div>
+
+            <motion.button
+              type="button"
+              className="mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="relative z-10">Send Message</span>
+              <motion.div
+                className="absolute inset-0 bg-titli origin-left"
+                initial={{ scaleX: 0 }}
+                whileHover={{ scaleX: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              />
+            </motion.button>
+          </form>
+        </motion.div>
+      </div>
     </section>
   );
 }

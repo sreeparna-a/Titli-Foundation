@@ -5,7 +5,16 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ThreadedLine from './components/ThreadedLine';
 import About from './components/About';
+import CardStackSection from './components/CardStackSection';
 import { Events, Members, Gallery, Contact } from './components/Sections';
+
+const sections = [
+  { Component: About, id: 'about' },
+  { Component: Events, id: 'events' },
+  { Component: Members, id: 'members' },
+  { Component: Gallery, id: 'gallery' },
+  { Component: Contact, id: 'contact' },
+];
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -22,12 +31,16 @@ export default function App() {
           
           <main>
             <Hero isLoaded={isLoaded} />
-            <div className="bg-forest relative z-20">
-              <About />
-              <Events />
-              <Members />
-              <Gallery />
-              <Contact />
+
+            {/* Card stacking container */}
+            <div className="relative z-20 bg-forest">
+              {sections.map(({ Component, id }, index) => (
+                <CardStackSection key={id} index={index} totalCards={sections.length}>
+                  <div className="bg-forest">
+                    <Component />
+                  </div>
+                </CardStackSection>
+              ))}
             </div>
           </main>
           
