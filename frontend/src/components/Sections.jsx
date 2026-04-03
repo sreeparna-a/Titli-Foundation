@@ -54,7 +54,7 @@ function SectionTag({ number, color, label }) {
 // ─── Reveal Text: clips from bottom like a curtain rising ──────────────────
 function RevealText({ children, delay = 0, className = '', style = {} }) {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-visible py-1">
       <motion.div
         className={className}
         initial={{ y: '110%', rotateX: 12 }}
@@ -338,59 +338,120 @@ export function Members() {
         {/* Narrative blurb */}
         <RevealText
           delay={0.1}
-          className="font-serif text-white/75 text-[14px] md:text-[16px] uppercase tracking-[0.35em] mb-12"
+          className="font-serif text-white/50 text-[14px] md:text-[18px] mb-12 max-w-2xl leading-relaxed italic"
         >
-          The souls behind the curtain
+          A collective of visionaries, performers, and architects of light. Each frame holds a story, each face a testament to the art of transformation.
         </RevealText>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {members.map((member, i) => (
-            <motion.div
-              key={member.id}
-              className="relative group cursor-pointer"
-              initial={{ opacity: 0, y: 60, rotate: i % 2 === 0 ? -2 : 2 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ delay: i * 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ y: -8, transition: { duration: 0.35 } }}
-            >
-              <div className="relative aspect-3/4 overflow-hidden border border-white/5 group-hover:border-titli/30 transition-colors duration-500">
-                {/* Image */}
-                  <img
-                    src={member.img}
-                    alt={member.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
-                  />
-
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-forest via-forest/10 md:via-forest/30 md:group-hover:via-forest/10 transition-all duration-700" />
-
-                {/* Corner ornament */}
-                <motion.div
-                  className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/60 md:border-titli/0 md:group-hover:border-titli/60 transition-colors duration-500"
-                />
-                <motion.div
-                  className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/60 md:border-titli/0 md:group-hover:border-titli/60 transition-colors duration-500"
-                />
-
-                {/* Info */}
-                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                  <div className="border-t border-white/10 pt-4 translate-y-0 md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500">
-                    <h4 className="font-serif text-xl text-white leading-tight">{member.name}</h4>
-                    <p
-                      className="font-sans text-[10px] uppercase tracking-widest text-titli mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500"
-                    >
-                      {member.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <MemberCard key={member.id} member={member} i={i} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+// ─── Artsy Member Card Component ──────────────────────────────────────────
+function MemberCard({ member, i }) {
+  const mouseX = useMotionValue(50);
+  const mouseY = useMotionValue(50);
+
+  const xPercent = useTransform(mouseX, (v) => `${v}%`);
+  const yPercent = useTransform(mouseY, (v) => `${v}%`);
+
+  const handleMouseMove = (e) => {
+    // Only track mouse on devices with hover capability (desktops)
+    if (window.matchMedia('(hover: hover)').matches) {
+      const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+      const x = (e.clientX - left) / width;
+      const y = (e.clientY - top) / height;
+      mouseX.set(x * 100);
+      mouseY.set(y * 100);
+    }
+  };
+
+  return (
+    <motion.div
+      className="relative group cursor-pointer"
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ delay: i * 0.12, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+      onMouseMove={handleMouseMove}
+    >
+      {/* Outer Editorial Border */}
+      <div className="relative aspect-3/4 overflow-hidden bg-forest border border-white/5 group-hover:border-titli/20 transition-colors duration-700">
+        
+        {/* Shutter Animation Overlay */}
+        <motion.div 
+          className="absolute inset-0 z-30 bg-forest flex flex-col"
+          initial={{ opacity: 1 }}
+          whileInView={{ opacity: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: i * 0.12 + 0.5, ease: [0.76, 0, 0.24, 1] }}
+        >
+          <div className="shutter-top" />
+          <div className="shutter-bottom" />
+        </motion.div>
+
+        {/* Localized Film Grain */}
+        <div className="film-grain" />
+
+        {/* Viewfinder Brackets */}
+        <div className="viewfinder-bracket viewfinder-bracket-tl group-hover:bg-titli/10" />
+        <div className="viewfinder-bracket viewfinder-bracket-tr group-hover:bg-titli/10" />
+        <div className="viewfinder-bracket viewfinder-bracket-bl group-hover:bg-titli/10" />
+        <div className="viewfinder-bracket viewfinder-bracket-br group-hover:bg-titli/10" />
+
+        {/* Technical Metadata Overlays */}
+        <div className="absolute top-4 left-0 right-0 px-6 z-10 flex justify-between items-start pointer-events-none">
+          <div className="flex flex-col gap-1">
+            <span className="text-[7px] font-sans text-titli/30 uppercase tracking-[0.3em]">REC ●</span>
+            <span className="text-[8px] font-sans text-white/20 uppercase tracking-[0.2em]">0{member.id} // PERS</span>
+          </div>
+          <div className="text-right">
+            <span className="text-[8px] font-sans text-white/20 uppercase tracking-[0.2em]">TITLI SOFT-ISO 400</span>
+          </div>
+        </div>
+
+        <div className="absolute bottom-16 left-0 right-0 px-6 z-10 flex justify-between items-end pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <span className="text-[7px] font-sans text-white/30 uppercase tracking-[0.3em]">1/125s f/2.8</span>
+          <span className="text-[7px] font-sans text-white/30 uppercase tracking-[0.3em]">4K RAW</span>
+        </div>
+
+        {/* Dynamic Light Leak - Hidden on mobile/touch for performance */}
+        <motion.div 
+          className="light-leak hidden lg:block"
+          style={{ 
+            '--x': xPercent,
+            '--y': yPercent,
+          }}
+        />
+
+        {/* Image */}
+        <img
+          src={member.img}
+          alt={member.name}
+          loading="lazy"
+          className="w-full h-full object-cover filter grayscale-0 lg:grayscale lg:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-110 lg:group-hover:scale-100 opacity-100 lg:opacity-40 lg:group-hover:opacity-100"
+        />
+
+        {/* Bottom Info Overlay */}
+        <div className="absolute inset-x-0 bottom-0 p-6 z-20 bg-linear-to-t from-forest to-transparent">
+          <div className="relative translate-y-0 lg:translate-y-2 lg:group-hover:translate-y-0 transition-transform duration-700 ease-out">
+            <h4 className="font-serif text-xl sm:text-2xl text-white leading-tight mb-1">{member.name}</h4>
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-px bg-titli/40" />
+              <p className="font-sans text-[9px] uppercase tracking-[0.3em] text-titli/80">
+                {member.role}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 

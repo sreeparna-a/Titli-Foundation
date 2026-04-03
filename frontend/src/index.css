@@ -178,3 +178,66 @@ body {
   -webkit-text-fill-color: transparent;
   animation: shimmer 3s linear infinite;
 }
+
+/* ─── Film Grain (Localized) ────────────────────────────────────── */
+.film-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.12;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E") repeat;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Cinematic Viewfinder Brackets ────────────────────────────── */
+.viewfinder-bracket {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-color: rgba(229, 252, 84, 0.4);
+  z-index: 10;
+  transition: all 0.5s ease;
+}
+
+.viewfinder-bracket-tl { top: 12px; left: 12px; border-top-width: 1px; border-left-width: 1px; }
+.viewfinder-bracket-tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+.viewfinder-bracket-bl { bottom: 12px; left: 12px; border-bottom-width: 1px; border-left-width: 1px; }
+.viewfinder-bracket-br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* ─── Light Leak Glow ───────────────────────────────────────────── */
+.light-leak {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(229, 252, 84, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 6;
+  mix-blend-mode: screen;
+}
+
+/* ─── Editorial Shutter Transition ──────────────────────────────── */
+@keyframes shutter-in {
+  0% { transform: scaleY(0); transform-origin: top; }
+  100% { transform: scaleY(1); transform-origin: top; }
+}
+
+.shutter-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: var(--color-forest);
+  z-index: 20;
+}
+
+.shutter-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: var(--color-forest);
+  z-index: 20;
+}
