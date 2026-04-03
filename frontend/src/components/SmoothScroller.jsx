@@ -8,6 +8,7 @@ export default function SmoothScroller({ children }) {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       wheelMultiplier: 1.2,
+      touchMultiplier: 0, // Disable smooth scroll on touch
     });
 
     // Expose instance so modals can pause smooth scrolling while open.

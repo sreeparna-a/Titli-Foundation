@@ -90,6 +90,7 @@ function PhotoCarousel({ photos, accentColor }) {
             key={active}
             src={photos[active].src}
             alt={photos[active].caption}
+            loading="lazy"
             custom={direction}
             variants={slideVariants}
             initial="enter"

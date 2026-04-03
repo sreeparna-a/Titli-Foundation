@@ -134,9 +134,9 @@ export default function ButterflyParticle() {
       transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
     >
       <motion.div style={{ y: driftY }}>
-        {/* Glow backdrop */}
+        {/* Glow backdrop - desktop only */}
         <motion.div
-          className="absolute inset-0 rounded-full blur-2xl"
+          className="hidden md:block absolute inset-0 rounded-full blur-2xl"
           style={{
             background: 'radial-gradient(circle, rgba(229,252,84,0.15) 0%, transparent 70%)',
             scale: glowScale,
@@ -170,8 +170,8 @@ export default function ButterflyParticle() {
           <circle cx={8} cy={2} r={1.2} fill="rgba(229,252,84,0.6)" />
         </svg>
 
-        {/* Sparkle trails */}
-        {[...Array(4)].map((_, i) => (
+        {/* Sparkle trails - reduced on mobile */}
+        {[...Array(typeof window !== 'undefined' && window.innerWidth < 768 ? 2 : 4)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full bg-titli/60"

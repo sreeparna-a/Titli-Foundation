@@ -58,7 +58,7 @@ export default function About() {
         className="absolute top-1/2 -translate-y-1/2 left-0 w-full overflow-hidden pointer-events-none opacity-[0.025] flex justify-center z-0"
         style={{ y: bgY, scale: bgScale }}
       >
-        <span className="text-[8rem] sm:text-[12rem] md:text-[20rem] font-serif uppercase tracking-tighter text-white whitespace-nowrap select-none">
+        <span className="text-[5rem] xs:text-[7rem] sm:text-[12rem] md:text-[20rem] font-serif uppercase tracking-tighter text-white whitespace-nowrap select-none">
           TITLI
         </span>
       </motion.div>

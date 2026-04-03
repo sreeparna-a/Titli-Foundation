@@ -59,7 +59,7 @@ export default function Navbar() {
     <>
       {/* ── Universal Top Bar ─────────────────────────────────────────── */}
       <motion.div
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 transition-all duration-500"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-10 py-4 md:py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
         animate={{ 
           y: isGalleryActive ? -120 : 0, 
@@ -79,15 +79,15 @@ export default function Navbar() {
         <a 
           href="#hero" 
           onClick={(e) => { e.preventDefault(); scrollTo('#hero'); }} 
-          className="group flex items-center gap-3 cursor-pointer"
+          className="group flex items-center gap-2 sm:gap-3 cursor-pointer"
         >
           <div className="relative group">
-            <div className="w-10 h-10 rounded-full border border-titli overflow-hidden shadow-[0_0_15px_rgba(229,252,84,0.3)] group-hover:shadow-[0_0_25px_rgba(229,252,84,0.5)] transition-all duration-500">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-titli overflow-hidden shadow-[0_0_15px_rgba(229,252,84,0.3)] group-hover:shadow-[0_0_25px_rgba(229,252,84,0.5)] transition-all duration-500">
               <img src="/logo-rounded.png" alt="Logo" className="w-full h-full object-cover origin-center transition-transform duration-500 scale-125 group-hover:scale-150" />
             </div>
             <div className="absolute inset-0 rounded-full bg-titli/10 scale-0 group-hover:scale-150 transition-transform duration-700 blur-2xl -z-10" />
           </div>
-          <span className="font-serif italic text-titli text-xl md:text-2xl tracking-tighter opacity-90 group-hover:opacity-100 transition-opacity">Titli</span>
+          <span className="font-serif italic text-titli text-lg sm:text-xl md:text-2xl tracking-tighter opacity-90 group-hover:opacity-100 transition-opacity">Titli</span>
         </a>
 
         {/* Hamburger Menu Toggle */}

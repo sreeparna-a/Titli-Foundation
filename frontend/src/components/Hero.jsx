@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import stageImg from '../assets/stage.png';
 import SplitText from './SplitText';
 
@@ -8,12 +8,21 @@ void motion;
 
 // Tiny floating dust particles that drift upward
 function DustParticles() {
-  const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const particleCount = isMobile ? 10 : 24;
+  const PARTICLES = Array.from({ length: particleCount }, (_, i) => ({
     id: i,
     x: Math.random() * 100,       // vw %
     delay: Math.random() * 8,      // s
     duration: 6 + Math.random() * 8,
-    size: 1 + Math.random() * 2,
+    size: 1 + Math.random() * (isMobile ? 1.5 : 2),
     opacity: 0.1 + Math.random() * 0.3,
   }));
 
@@ -94,7 +103,7 @@ export default function Hero({ isLoaded }) {
       >
         {/* "Titli" — SplitText per-char reveal */}
         <div className="overflow-visible mb-0 sm:mb-1">
-          <div className="text-[3.5rem] xs:text-[4.5rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-serif text-titli leading-none">
+          <div className="text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-serif text-titli leading-none">
             <SplitText
               text="Titli"
               mode="chars"
@@ -135,7 +144,7 @@ export default function Hero({ isLoaded }) {
               animate={{ width: isLoaded ? '4rem' : 0 }}
               transition={{ duration: 1.2, delay: 2.2 }}
             />
-            <p className="text-sm sm:text-base md:text-xl font-serif text-accent-orange italic">
+            <p className="text-[10px] sm:text-base md:text-xl font-serif text-accent-orange italic">
               A Social Responsibility
             </p>
             <motion.span

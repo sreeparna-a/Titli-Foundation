@@ -149,6 +149,20 @@ const members = [
   { id: 4, name: 'Rohan Sen', role: 'Visual Artist', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80' },
 ];
 
+function useWindowSize() {
+  const [size, setSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+  });
+
+  useEffect(() => {
+    const handleResize = () => setSize({ width: window.innerWidth });
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}
+
 // ─── Events Section ────────────────────────────────────────────────────────
 export function Events() {
   const [filter, setFilter] = useState('All');
@@ -329,7 +343,7 @@ export function Members() {
           The souls behind the curtain
         </RevealText>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {members.map((member, i) => (
             <motion.div
               key={member.id}
@@ -342,11 +356,12 @@ export function Members() {
             >
               <div className="relative aspect-3/4 overflow-hidden border border-white/5 group-hover:border-titli/30 transition-colors duration-500">
                 {/* Image */}
-                <img
-                  src={member.img}
-                  alt={member.name}
-                  className="w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
-                />
+                  <img
+                    src={member.img}
+                    alt={member.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
+                  />
 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-forest via-forest/10 md:via-forest/30 md:group-hover:via-forest/10 transition-all duration-700" />
@@ -432,7 +447,9 @@ export function Gallery() {
   const stickyRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
-  // Pin the sticky section while we scroll through containerRef's height
+  const { width } = useWindowSize();
+  const isDesktop = width >= 1024;
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
@@ -440,7 +457,7 @@ export function Gallery() {
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     // Hidden while pinning/horizontal scrolling
-    const isActive = latest > 0.01 && latest < 0.99;
+    const isActive = isDesktop && latest > 0.01 && latest < 0.99;
     window.dispatchEvent(new CustomEvent('gallery-active', { detail: isActive }));
   });
 
@@ -553,94 +570,129 @@ export function Gallery() {
         </motion.p>
       </div>
 
-      {/* Pinned horizontal scroll container */}
-      {/* Height = 100vh (sticky) + (N-1) * 100vh for scrolling through slides */}
+      {/* Pinned horizontal scroll container OR Vertical Grid */}
       <div
         ref={containerRef}
-        style={{ height: `${totalSlides * 100}vh` }}
+        style={{ height: isDesktop ? `${totalSlides * 100}vh` : 'auto' }}
         className="relative"
       >
-        <div ref={stickyRef} className="sticky top-0 h-screen overflow-hidden bg-[#080e0b]">
+        {isDesktop ? (
+          <div ref={stickyRef} className="sticky top-0 h-screen overflow-hidden bg-[#080e0b]">
+            {/* Horizontally scrolling track */}
+            <motion.div
+              className="flex h-full"
+              style={{
+                width: `${totalSlides * 100}vw`,
+                x: xTranslate,
+              }}
+            >
+              {filtered.map((img, i) => (
+                <div
+                  key={img.src}
+                  className="relative shrink-0 w-screen h-full group overflow-hidden"
+                >
+                  {/* Full-bleed image */}
+                  <img
+                    src={`${img.src}?q=75`}
+                    alt={img.alt}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-105 group-hover:scale-100"
+                    style={{ willChange: 'transform' }}
+                  />
 
-          {/* Horizontally scrolling track */}
-          <motion.div
-            className="flex h-full"
-            style={{
-              width: `${totalSlides * 100}vw`,
-              x: xTranslate,
-            }}
-          >
-            {filtered.map((img, i) => (
-              <div
-                key={img.src}
-                className="relative shrink-0 w-screen h-full group overflow-hidden"
-              >
-                {/* Full-bleed image */}
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  className="absolute inset-0 w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-105 group-hover:scale-100"
-                  style={{ willChange: 'transform' }}
-                />
+                  {/* Bottom gradient */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+                  {/* Side gradients for depth */}
+                  <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
 
-                {/* Bottom gradient */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
-                {/* Side gradients for depth */}
-                <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
-
-                {/* Slide number (top-left) */}
-                <div className="absolute top-8 left-8 md:left-16 z-10 flex items-center gap-3">
-                  <span className="font-serif text-[2.5rem] text-white/10 leading-none">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="w-px h-8 bg-white/10" />
-                  <span className="text-[9px] uppercase tracking-[0.4em] text-white/30 font-sans">{img.category}</span>
-                </div>
-
-                {/* Caption (bottom-left) */}
-                <div className="absolute bottom-12 left-8 md:left-16 z-10 max-w-lg">
-                  <motion.div
-                    className="border-l-2 border-titli/60 pl-5"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <p className="font-serif text-2xl md:text-4xl text-white/90 italic mb-2 leading-tight">
-                      {img.caption}
-                    </p>
-                    <span
-                      className="text-[9px] uppercase tracking-[0.35em] font-sans px-3 py-1 rounded-full inline-block mt-1"
-                      style={{ border: '1px solid rgba(229,252,84,0.3)', color: 'rgba(229,252,84,0.7)', background: 'rgba(229,252,84,0.05)' }}
-                    >
-                      {img.category}
+                  {/* Slide number (top-left) */}
+                  <div className="absolute top-8 left-8 md:left-16 z-10 flex items-center gap-3">
+                    <span className="font-serif text-[2.5rem] text-white/10 leading-none">
+                      {String(i + 1).padStart(2, '0')}
                     </span>
-                  </motion.div>
+                    <span className="w-px h-8 bg-white/10" />
+                    <span className="text-[9px] uppercase tracking-[0.4em] text-white/30 font-sans">{img.category}</span>
+                  </div>
+
+                  {/* Caption (bottom-left) */}
+                  <div className="absolute bottom-12 left-8 md:left-16 z-10 max-w-lg">
+                    <motion.div
+                      className="border-l-2 border-titli/60 pl-5"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: false }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <p className="font-serif text-2xl md:text-4xl text-white/90 italic mb-2 leading-tight">
+                        {img.caption}
+                      </p>
+                      <span
+                        className="text-[9px] uppercase tracking-[0.35em] font-sans px-3 py-1 rounded-full inline-block mt-1"
+                        style={{ border: '1px solid rgba(229,252,84,0.3)', color: 'rgba(229,252,84,0.7)', background: 'rgba(229,252,84,0.05)' }}
+                      >
+                        {img.category}
+                      </span>
+                    </motion.div>
+                  </div>
+
+                  {/* Corner accent */}
+                  <div className="absolute bottom-12 right-8 md:right-16 z-10 w-12 h-12 border-b border-r border-titli/20" />
+                  <div className="absolute top-8 right-8 md:right-16 z-10 w-12 h-12 border-t border-r border-white/10" />
                 </div>
+              ))}
+            </motion.div>
 
-                {/* Corner accent */}
-                <div className="absolute bottom-12 right-8 md:right-16 z-10 w-12 h-12 border-b border-r border-titli/20" />
-                <div className="absolute top-8 right-8 md:right-16 z-10 w-12 h-12 border-t border-r border-white/10" />
+            {/* HUD overlay: slide counter + progress bar */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 w-64">
+              <div className="w-full h-px bg-white/10 relative overflow-hidden rounded-full">
+                <motion.div
+                  className="absolute top-0 left-0 h-full bg-titli rounded-full"
+                  style={{ width: barWidth }}
+                />
               </div>
-            ))}
-          </motion.div>
-
-          {/* HUD overlay: slide counter + progress bar */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 w-64">
-            {/* Progress bar */}
-            <div className="w-full h-px bg-white/10 relative overflow-hidden rounded-full">
-              <motion.div
-                className="absolute top-0 left-0 h-full bg-titli rounded-full"
-                style={{ width: barWidth }}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="font-serif text-sm text-titli tabular-nums">{String(slideIndex + 1).padStart(2, '0')}</span>
-              <span className="text-white/20 text-xs">/</span>
-              <span className="text-white/30 text-xs font-sans tabular-nums">{String(totalSlides).padStart(2, '0')}</span>
+              <div className="flex items-center gap-3">
+                <span className="font-serif text-sm text-titli tabular-nums">{String(slideIndex + 1).padStart(2, '0')}</span>
+                <span className="text-white/20 text-xs">/</span>
+                <span className="text-white/30 text-xs font-sans tabular-nums">{String(totalSlides).padStart(2, '0')}</span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          /* Mobile/Tablet Vertical Layout */
+          <div className="px-6 md:px-14 pb-20 space-y-12">
+            {filtered.map((img, i) => (
+              <motion.div
+                key={img.src}
+                className="relative flex flex-col"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.8, delay: i * 0.1 }}
+              >
+                <div className="relative aspect-video sm:aspect-2/1 overflow-hidden group">
+                  <img
+                    src={`${img.src}?q=60&w=1200`}
+                    alt={img.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-4 left-4 font-serif text-2xl text-white/20">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                </div>
+                <div className="mt-4 border-l-2 border-titli/60 pl-5">
+                  <p className="font-serif text-xl sm:text-2xl text-white/90 italic leading-tight">
+                    {img.caption}
+                  </p>
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-titli/70 font-sans mt-2 block">
+                    {img.category}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bottom accent: filmstrip marquee */}
