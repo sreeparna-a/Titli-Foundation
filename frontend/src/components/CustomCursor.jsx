@@ -28,9 +28,18 @@ export default function CustomCursor() {
   const [state, setState] = useState('default'); // 'default' | 'magnetic' | 'view' | 'text' | 'hidden'
   const [label, setLabel] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const cursorRef = useRef(null);
 
   useEffect(() => {
+    // Check if we are on desktop/laptop size
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+
     const onMove = (e) => {
       rawX.set(e.clientX);
       rawY.set(e.clientY);
@@ -64,18 +73,21 @@ export default function CustomCursor() {
       setLabel('');
     };
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseleave', onLeave);
-    document.addEventListener('mouseenter', onEnter);
-    document.addEventListener('mouseover', onOver);
+    if (isDesktop) {
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseleave', onLeave);
+      document.addEventListener('mouseenter', onEnter);
+      document.addEventListener('mouseover', onOver);
+    }
 
     return () => {
+      window.removeEventListener('resize', checkIsDesktop);
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseleave', onLeave);
       document.removeEventListener('mouseenter', onEnter);
       document.removeEventListener('mouseover', onOver);
     };
-  }, [rawX, rawY, isVisible]);
+  }, [rawX, rawY, isVisible, isDesktop]);
 
   // State-derived ring styles
   const ringSize = state === 'magnetic' ? 72 : state === 'view' ? 88 : state === 'text' ? 24 : 48;
@@ -94,6 +106,8 @@ export default function CustomCursor() {
 
   // Inner dot size
   const dotSize = state === 'magnetic' ? 4 : state === 'text' ? 2 : 5;
+
+  if (!isDesktop) return null;
 
   return (
     <>

@@ -142,7 +142,7 @@ export default function App() {
       {/* Global: custom cursor (desktop only) */}
       <CustomCursor />
 
-      <div className="bg-forest min-h-screen text-white font-sans selection:bg-titli selection:text-forest cursor-none">
+      <div className="bg-forest min-h-screen text-white font-sans selection:bg-titli selection:text-forest lg:cursor-none">
         <div className="noise-overlay"></div>
         <Toaster position="bottom-right" gutter={8} toastOptions={{
           style: {
