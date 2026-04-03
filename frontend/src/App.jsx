@@ -18,24 +18,6 @@ void motion;
 
 // ─── Footer ───────────────────────────────────────────────────────────────
 function Footer() {
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    const tick = () => {
-      setTime(
-        new Date().toLocaleTimeString('en-IN', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-          timeZone: 'Asia/Kolkata',
-        })
-      );
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
 
   return (
     <footer className="w-full relative z-20 bg-[#050908] border-t border-white/5">
@@ -67,12 +49,6 @@ function Footer() {
             </p>
           </div>
 
-          {/* Center: Live local time */}
-          <div className="flex flex-col items-start md:items-center gap-1">
-            <p className="text-[9px] uppercase tracking-[0.4em] text-white/20 font-sans">Rourkela, India</p>
-            <p className="font-serif text-2xl md:text-3xl text-white/30 tabular-nums">{time}</p>
-            <p className="text-[9px] uppercase tracking-[0.3em] text-titli/30 font-sans">IST — UTC+5:30</p>
-          </div>
 
           {/* Right: Social links  */}
           <div className="flex flex-col gap-3">
@@ -80,6 +56,7 @@ function Footer() {
             <div className="flex items-center gap-4">
               {[
                 { name: 'Instagram', href: 'https://www.instagram.com/titli_foundation.rourkela/', label: 'IG' },
+                { name: 'YouTube', href: 'https://youtube.com/', label: 'YT' },
               ].map((s) => (
                 <MagneticButton key={s.name} strength={0.5}>
                   <a
@@ -87,8 +64,6 @@ function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex items-center gap-2 text-white/40 hover:text-titli transition-colors duration-400 font-sans text-xs uppercase tracking-widest"
-                    data-cursor="view"
-                    data-cursor-label="Visit"
                   >
                     <span className="w-6 h-6 rounded-full border border-white/10 group-hover:border-titli/50 flex items-center justify-center text-[9px] transition-colors duration-400">{s.label}</span>
                     {s.name}

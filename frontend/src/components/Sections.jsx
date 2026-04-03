@@ -779,6 +779,7 @@ export function Contact() {
               <div className="flex gap-6">
                 {[
                   { name: 'Instagram', href: 'https://www.instagram.com/titli_foundation.rourkela/' },
+                  { name: 'YouTube', href: 'https://youtube.com/' },
                 ].map((s) => (
                   <a
                     key={s.name}
