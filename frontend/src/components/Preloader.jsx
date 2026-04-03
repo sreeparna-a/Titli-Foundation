@@ -35,18 +35,61 @@ export default function Preloader({ onComplete }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
       {/* Left Curtain */}
       <motion.div
-        className="absolute top-0 left-0 w-1/2 h-full bg-[#050807] border-r border-[#151f19] z-10"
-        initial={{ x: 0 }}
-        animate={{ x: progress === 100 ? '-100%' : 0 }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
-      />
+        className="absolute top-0 left-0 w-1/2 h-full z-10 overflow-hidden bg-forest"
+        style={{
+          backgroundImage: `url('/curtain-texture.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'right',
+          transformOrigin: 'left center'
+        }}
+        initial={{ x: 0, scaleX: 1, skewX: 0 }}
+        animate={{ 
+          x: progress === 100 ? '-100%' : 0,
+          scaleX: progress === 100 ? 0.6 : 1,
+          skewX: progress === 100 ? 2 : 0,
+          filter: progress === 100 ? 'brightness(0.5)' : 'brightness(1)'
+        }}
+        transition={{ duration: 1.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
+      >
+        {/* Depth & Folds Overlay */}
+        <div className="absolute inset-0 bg-linear-to-r from-forest/80 via-transparent to-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,rgba(0,0,0,0.2)_10%,transparent_20%)] opacity-30 pointer-events-none" />
+        {/* Center Edge Highlight */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: progress === 100 ? 1 : 0 }}
+          className="absolute right-0 top-0 w-[2px] h-full bg-titli/20 shadow-[0_0_20px_rgba(229,252,84,0.3)] z-20" 
+        />
+      </motion.div>
+
       {/* Right Curtain */}
       <motion.div
-        className="absolute top-0 right-0 w-1/2 h-full bg-[#050807] border-l border-[#151f19] z-10"
-        initial={{ x: 0 }}
-        animate={{ x: progress === 100 ? '100%' : 0 }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
-      />
+        className="absolute top-0 right-0 w-1/2 h-full z-10 overflow-hidden bg-forest"
+        style={{
+          backgroundImage: `url('/curtain-texture.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'left',
+          transformOrigin: 'right center'
+        }}
+        initial={{ x: 0, scaleX: 1, skewX: 0 }}
+        animate={{ 
+          x: progress === 100 ? '100%' : 0,
+          scaleX: progress === 100 ? 0.6 : 1,
+          skewX: progress === 100 ? -2 : 0,
+          filter: progress === 100 ? 'brightness(0.5)' : 'brightness(1)'
+        }}
+        transition={{ duration: 1.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
+      >
+        {/* Depth & Folds Overlay */}
+        <div className="absolute inset-0 bg-linear-to-l from-forest/80 via-transparent to-black/40 pointer-events-none" />
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(-90deg,transparent,rgba(0,0,0,0.2)_10%,transparent_20%)] opacity-30 pointer-events-none" />
+        {/* Center Edge Highlight */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: progress === 100 ? 1 : 0 }}
+          className="absolute left-0 top-0 w-[2px] h-full bg-titli/20 shadow-[0_0_20px_rgba(229,252,84,0.3)] z-20" 
+        />
+      </motion.div>
 
       {/* Center Content */}
       <motion.div
