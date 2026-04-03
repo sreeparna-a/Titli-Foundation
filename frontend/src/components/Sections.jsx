@@ -438,6 +438,12 @@ export function Gallery() {
     offset: ['start start', 'end end'],
   });
 
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    // Hidden while pinning/horizontal scrolling
+    const isActive = latest > 0.01 && latest < 0.99;
+    window.dispatchEvent(new CustomEvent('gallery-active', { detail: isActive }));
+  });
+
   const filtered = galleryData.filter(
     (img) => activeCategory === 'All' || img.category === activeCategory
   );
@@ -568,8 +574,6 @@ export function Gallery() {
               <div
                 key={img.src}
                 className="relative shrink-0 w-screen h-full group overflow-hidden"
-                data-cursor="view"
-                data-cursor-label="View"
               >
                 {/* Full-bleed image */}
                 <img

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MagneticButton from './MagneticButton';
 
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
@@ -15,7 +15,14 @@ const navItems = [
 ];
 
 export default function Navbar() {
+  const [isGalleryActive, setIsGalleryActive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGallery = (e) => setIsGalleryActive(e.detail);
+    window.addEventListener('gallery-active', handleGallery);
+    return () => window.removeEventListener('gallery-active', handleGallery);
+  }, []);
 
   const scrollTo = (href) => {
     setMenuOpen(false);
@@ -54,7 +61,11 @@ export default function Navbar() {
       <motion.div
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        animate={{ 
+          y: isGalleryActive ? -120 : 0, 
+          opacity: isGalleryActive ? 0 : 1,
+          pointerEvents: isGalleryActive ? 'none' : 'auto'
+        }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         style={{
           // Always visible navbar, but fully transparent.
