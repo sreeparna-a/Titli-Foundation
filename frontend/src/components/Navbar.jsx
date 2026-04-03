@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import MagneticButton from './MagneticButton';
 
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
 void motion;
@@ -79,10 +80,12 @@ export default function Navbar() {
         </a>
 
         {/* Hamburger Menu Toggle */}
+        <MagneticButton strength={0.4}>
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
           className="group relative flex flex-col justify-center items-center w-12 h-12 gap-[6px] rounded-full hover:bg-white/5 transition-all duration-500 overflow-hidden"
+          data-cursor="magnetic"
         >
           <motion.span
             className="block w-6 h-[1.5px] bg-titli/80 origin-center"
@@ -114,6 +117,7 @@ export default function Navbar() {
           {/* Hover pulse effect */}
           <div className="absolute inset-0 bg-titli/5 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full -z-10" />
         </button>
+        </MagneticButton>
       </motion.div>
 
       {/* ── Fullscreen Overlay Menu ──────────────────────────────────── */}
@@ -150,6 +154,7 @@ export default function Navbar() {
                     href={item.href}
                     className="relative block py-2 px-10 text-center"
                     onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                    data-cursor="magnetic"
                   >
                     {/* Hover Glow Effect */}
                     <span className="absolute inset-0 bg-titli/0 group-hover:bg-titli/5 blur-2xl rounded-full transition-all duration-500 scale-0 group-hover:scale-110" />

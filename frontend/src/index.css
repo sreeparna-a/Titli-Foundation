@@ -29,6 +29,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Hide native cursor everywhere on desktop ────────────────────── */
+@media (pointer: fine) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
 /* Custom minimal scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
@@ -160,9 +167,10 @@ body {
 .shimmer-text {
   background: linear-gradient(
     90deg,
-    rgba(229,252,84,0.3) 0%,
-    rgba(229,252,84,1) 50%,
-    rgba(229,252,84,0.3) 100%
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,1) 40%,
+    rgba(255,255,255,1) 60%,
+    rgba(255,255,255,0.4) 100%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;

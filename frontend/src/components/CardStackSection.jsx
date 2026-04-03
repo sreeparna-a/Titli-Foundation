@@ -9,9 +9,10 @@ void motion;
  * as the user scrolls, creating a cinematic "card reveal" effect.
  * 
  * @param {number} index - position in stack (0-based)
+ * @param {boolean} noOverflow - if true, removes overflow-hidden to allow sticky children
  * @param {string} bgColor - tailwind or CSS bg for this card
  */
-export default function CardStackSection({ children, index }) {
+export default function CardStackSection({ children, index, noOverflow = false }) {
   const ref = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -35,7 +36,7 @@ export default function CardStackSection({ children, index }) {
         borderRadius,
         transformOrigin: 'top center',
       }}
-      className="relative will-change-transform overflow-hidden"
+      className={`relative will-change-transform ${noOverflow ? '' : 'overflow-hidden'}`}
     >
       {children}
     </motion.div>

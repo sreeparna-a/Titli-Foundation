@@ -81,7 +81,7 @@ const eventsData = [
     description:
       'A luminous evening of one-act plays that explore the textures of solitude, grief, and unexpected joy. "The Autumn Monologues" brings together six original pieces by emerging playwrights from across Bengal, performed on an intimate stage shaped like a crescent moon. Each monologue is a universe unto itself — raw, vulnerable, and alive.',
     details: [
-      { label: 'Venue', value: 'Academy of Fine Arts, Kolkata' },
+      { label: 'Venue', value: 'Academy of Fine Arts, Rourkela' },
       { label: 'Duration', value: '2h 30min (incl. interval)' },
       { label: 'Language', value: 'Bengali / English' },
       { label: 'Directed by', value: 'Sreeparna Chatterjee' },
@@ -104,7 +104,7 @@ const eventsData = [
     description:
       'A curated retrospective of independent Bengali cinema spanning five decades, "Shadows on Film" invited audiences to rediscover lost masterworks and debut shorts in a single breath. With panel discussions, director Q&As, and a photographic exhibition of behind-the-scenes moments, the festival became a pilgrimage for cinephiles.',
     details: [
-      { label: 'Venue', value: 'Nandan Cinema, Kolkata' },
+      { label: 'Venue', value: 'Nandan Cinema, Rourkela' },
       { label: 'Editions shown', value: '14 short films, 6 features' },
       { label: 'Languages', value: 'Bengali, Hindi, Santali' },
       { label: 'Curated by', value: 'Mira Banerjee' },
@@ -127,7 +127,7 @@ const eventsData = [
     description:
       '"Canvas & Curtains" was a one-week multidisciplinary residency at Titli HQ where visual artists and theatre-makers collided. The result — a hybrid exhibition where paintings became backdrops for live micro-performances, and the audience wandered through a living gallery. It blurred every line we thought we knew about art.',
     details: [
-      { label: 'Venue', value: 'Titli Foundation Studio, Kolkata' },
+      { label: 'Venue', value: 'Titli Foundation Studio, Rourkela' },
       { label: 'Duration', value: '7-day residency + finale night' },
       { label: 'Artists', value: '12 visual artists, 8 performers' },
       { label: 'Curated by', value: 'Rohan Sen & Arjun Das' },
@@ -223,6 +223,8 @@ export function Events() {
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && setSelectedEvent(event)}
+                  data-cursor="view"
+                  data-cursor-label="Open"
                 >
                   {/* Background Fill (visible on mobile, hover on desktop) */}
                   <div
@@ -426,136 +428,100 @@ const galleryData = [
 const CATEGORIES = ['All', 'Theatre', 'Film', 'Art'];
 
 export function Gallery() {
-  const sectionRef = useRef(null);
+  const containerRef = useRef(null);
+  const stickyRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
-
-  const bgGlow = useTransform(scrollYProgress, [0, 0.5, 1], ['0%', '-5%', '-10%']);
-
-  // Continuous marquee position (px) so reversing direction feels smooth.
-  const stripTrackRef = useRef(null);
-  const stripX = useMotionValue(0);
-  const loopWidthPxRef = useRef(0); // width of *one* half (because we duplicate the words)
-
-  // Direction + smoothing.
-  // For this strip, negative `x` means moving left (same direction as the old 0% -> -8% transform).
-  const stripDirRef = useRef(-1); // -1 = moving left, 1 = moving right
-  const lastDirRef = useRef(-1);
-  const lastDirChangeTimeRef = useRef(0);
-
-  const scrollVelocity = useVelocity(scrollYProgress);
-  const smoothScrollVelocity = useSpring(scrollVelocity, {
-    stiffness: 120,
-    damping: 22,
-    mass: 0.8,
-  });
-
-  useMotionValueEvent(smoothScrollVelocity, 'change', (v) => {
-    const now = performance.now();
-    // Cooldown prevents rapid flips while the user jitters between frames.
-    if (now - lastDirChangeTimeRef.current < 300) return;
-    // Deadzone prevents tiny scroll noise from flipping direction.
-    if (Math.abs(v) < 0.015) return;
-
-    // When scrolling down, `scrollYProgress` increases => velocity > 0.
-    // We want that to move the strip left (negative x).
-    const nextDir = v > 0 ? -1 : 1;
-    if (nextDir === lastDirRef.current) return;
-
-    lastDirRef.current = nextDir;
-    stripDirRef.current = nextDir;
-    lastDirChangeTimeRef.current = now;
-  });
-
-  useEffect(() => {
-    if (!stripTrackRef.current) return;
-
-    const updateWidths = () => {
-      const w = stripTrackRef.current?.getBoundingClientRect().width ?? 0;
-      loopWidthPxRef.current = w > 0 ? w / 2 : 0;
-    };
-
-    updateWidths();
-
-    const ro = new ResizeObserver(updateWidths);
-    ro.observe(stripTrackRef.current);
-
-    return () => ro.disconnect();
-  }, []);
-
-  useAnimationFrame((_, deltaMs) => {
-    const loopWidth = loopWidthPxRef.current;
-    if (!loopWidth) return;
-
-    // Base speed is tuned for a subtle gallery accent.
-    const speedPxPerSecond = 26;
-    const deltaPx = (speedPxPerSecond * deltaMs) / 1000;
-
-    let nextX = stripX.get() + stripDirRef.current * deltaPx;
-
-    // Wrap seamlessly: track is duplicated twice; loop is one half.
-    while (nextX <= -loopWidth) nextX += loopWidth;
-    while (nextX > 0) nextX -= loopWidth;
-
-    stripX.set(nextX);
+  // Pin the sticky section while we scroll through containerRef's height
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
   });
 
   const filtered = galleryData.filter(
     (img) => activeCategory === 'All' || img.category === activeCategory
   );
 
-  const stripWords = ['Theatre', 'Film', 'Art', 'Culture', 'Story', 'Memory', 'Stage', 'Light', 'Voice'];
-  const stripWordsDoubled = [...stripWords, ...stripWords];
+  // Each panel is 100vw wide. We shift the track by (N-1) * 100vw total.
+  // scrollYProgress 0→1 maps from 0vw to -(totalSlides-1)*100vw
+  const totalSlides = filtered.length;
+  const xMove = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [0, -(totalSlides - 1) * 100]
+  );
+  const xSpring = useSpring(xMove, { stiffness: 55, damping: 22, mass: 0.8 });
+  const xTranslate = useTransform(xSpring, (v) => `${v}vw`);
+
+  // Progress bar width
+  const barWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  // Slide index for the counter
+  const [slideIndex, setSlideIndex] = useState(0);
+  useEffect(() => {
+    return scrollYProgress.on('change', (v) => {
+      setSlideIndex(Math.round(v * (totalSlides - 1)));
+    });
+  }, [scrollYProgress, totalSlides]);
 
   return (
-    <section
-      id="gallery"
-      ref={sectionRef}
-      className="relative w-full py-24 md:py-32 px-4 sm:px-8 md:px-24 overflow-hidden"
-    >
-      {/* Ambient background glow */}
-      <motion.div
-        className="absolute -right-80 top-1/3 w-[700px] h-[700px] rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 65%)',
-          y: bgGlow,
-        }}
-      />
+    <>
+      {/* Section label (above the sticky area) */}
+      <div id="gallery" className="relative z-10 px-6 sm:px-14 lg:px-28 pt-20 pb-6 bg-forest">
+        <motion.div
+          className="flex items-center gap-4 mb-4"
+          initial={{ opacity: 0, x: -60, skewX: -10 }}
+          whileInView={{ opacity: 1, x: 0, skewX: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.span
+            className="text-xs uppercase tracking-[0.3em] font-sans text-titli"
+            initial={{ opacity: 0, scale: 0 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            04
+          </motion.span>
+          <motion.span
+            className="h-px bg-titli"
+            initial={{ width: 0 }}
+            whileInView={{ width: 48 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+          />
+          <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">Archives</h2>
+        </motion.div>
 
-      <div className="max-w-6xl mx-auto pl-0 sm:pl-12 lg:pl-24 relative z-10">
-
-        {/* Header row */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-          <div>
-            <SectionTag number="04" color="#E5FC54" label="Archives" />
-            <motion.p
-              className="font-serif text-[1.55rem] md:text-[2.1rem] text-white/85 italic leading-relaxed max-w-xl antialiased"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            >
-              "Art is not what you see,<br />but what you make others see."
-              <span className="block text-[11px] not-italic uppercase tracking-widest text-white/35 font-sans mt-2">
-                — Edgar Degas
-              </span>
-            </motion.p>
-          </div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <motion.p
+            className="font-serif text-[1.4rem] md:text-[2rem] text-white/80 italic leading-relaxed max-w-xl"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.15 }}
+          >
+            "Art is not what you see,<br />but what you make others see."
+            <span className="block text-[11px] not-italic uppercase tracking-widest text-white/30 font-sans mt-2">
+              — Edgar Degas
+            </span>
+          </motion.p>
 
           {/* Category filter */}
           <motion.div
-            className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max self-start md:self-end"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.7 }}
           >
             {CATEGORIES.map((cat) => (
               <motion.button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 whileTap={{ scale: 0.94 }}
+                data-cursor="magnetic"
                 className={`text-[10px] uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-all duration-300 ${
                   activeCategory === cat
                     ? 'bg-titli text-forest font-medium'
@@ -568,106 +534,128 @@ export function Gallery() {
           </motion.div>
         </div>
 
-        {/* Masonry-style editorial grid */}
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={activeCategory}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 auto-rows-[200px] sm:auto-rows-[240px] lg:auto-rows-[260px]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {filtered.map((img, i) => {
-              const isTall = img.size === 'tall';
-              const isWide = img.size === 'wide';
-              return (
-                <motion.div
-                  key={img.src}
-                  layout
-                  className={`
-                    relative overflow-hidden group cursor-pointer
-                    ${isTall ? 'row-span-2' : ''}
-                    ${isWide ? 'sm:col-span-2' : ''}
-                  `}
-                  initial={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ zIndex: 10 }}
-                >
-                  {/* Image */}
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale-0 md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out opacity-100 md:opacity-60 md:group-hover:opacity-100"
-                  />
-
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/50 group-hover:via-transparent transition-all duration-700" />
-
-                  {/* Category pill */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span
-                      className="text-[9px] uppercase tracking-[0.25em] font-sans px-3 py-1 rounded-full border border-titli/50 text-titli bg-black/60 md:border-titli/0 md:text-white/40 md:bg-black/40 md:group-hover:border-titli/50 md:group-hover:text-titli md:group-hover:bg-black/60 transition-all duration-500"
-                    >
-                      {img.category}
-                    </span>
-                  </div>
-
-                  {/* Caption */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10 translate-y-0 md:translate-y-3 opacity-100 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-500 ease-out">
-                    <div className="border-t border-white/10 pt-3">
-                      <p className="text-[11px] uppercase tracking-[0.3em] text-white/80 font-sans">{img.caption}</p>
-                    </div>
-                  </div>
-
-                  {/* Corner accents */}
-                  <div className="absolute top-3 right-3 w-6 h-6 border-t border-r border-titli/50 md:border-white/0 md:group-hover:border-titli/50 transition-all duration-700" />
-                  <div className="absolute bottom-3 left-3 w-6 h-6 border-b border-l border-titli/50 md:border-white/0 md:group-hover:border-titli/50 transition-all duration-700" />
-
-                  {/* Subtle index number */}
-                  <div className="absolute top-4 right-4 z-10 text-[10px] font-sans text-white/10 group-hover:text-white/30 transition-colors duration-500">
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Horizontal filmstrip accent */}
-        <div className="mt-12 overflow-hidden border-t border-b border-white/5 py-4">
-          <motion.div
-            ref={stripTrackRef}
-            className="flex items-center gap-6 whitespace-nowrap"
-            style={{ x: stripX }}
-          >
-            {stripWordsDoubled.map((word, i) => (
-              <span
-                key={i}
-                className="text-[10px] uppercase tracking-[0.4em] text-white/10 font-sans shrink-0"
-              >
-                {word} <span className="text-titli/20 mx-3">◆</span>
-              </span>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Bottom label */}
         <motion.p
-          className="mt-8 text-[10px] uppercase tracking-[0.4em] text-white/15 font-sans"
+          className="mt-4 text-[9px] uppercase tracking-[0.4em] text-white/20 font-sans flex items-center gap-2"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1.5, delay: 0.4 }}
+          transition={{ duration: 1 }}
+        >
+          <span className="w-4 h-px bg-white/20" />
+          Scroll to explore
+          <span className="w-4 h-px bg-white/20" />
+        </motion.p>
+      </div>
+
+      {/* Pinned horizontal scroll container */}
+      {/* Height = 100vh (sticky) + (N-1) * 100vh for scrolling through slides */}
+      <div
+        ref={containerRef}
+        style={{ height: `${totalSlides * 100}vh` }}
+        className="relative"
+      >
+        <div ref={stickyRef} className="sticky top-0 h-screen overflow-hidden bg-[#080e0b]">
+
+          {/* Horizontally scrolling track */}
+          <motion.div
+            className="flex h-full"
+            style={{
+              width: `${totalSlides * 100}vw`,
+              x: xTranslate,
+            }}
+          >
+            {filtered.map((img, i) => (
+              <div
+                key={img.src}
+                className="relative shrink-0 w-screen h-full group overflow-hidden"
+                data-cursor="view"
+                data-cursor-label="View"
+              >
+                {/* Full-bleed image */}
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  className="absolute inset-0 w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-105 group-hover:scale-100"
+                  style={{ willChange: 'transform' }}
+                />
+
+                {/* Bottom gradient */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+                {/* Side gradients for depth */}
+                <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
+
+                {/* Slide number (top-left) */}
+                <div className="absolute top-8 left-8 md:left-16 z-10 flex items-center gap-3">
+                  <span className="font-serif text-[2.5rem] text-white/10 leading-none">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="w-px h-8 bg-white/10" />
+                  <span className="text-[9px] uppercase tracking-[0.4em] text-white/30 font-sans">{img.category}</span>
+                </div>
+
+                {/* Caption (bottom-left) */}
+                <div className="absolute bottom-12 left-8 md:left-16 z-10 max-w-lg">
+                  <motion.div
+                    className="border-l-2 border-titli/60 pl-5"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: false }}
+                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p className="font-serif text-2xl md:text-4xl text-white/90 italic mb-2 leading-tight">
+                      {img.caption}
+                    </p>
+                    <span
+                      className="text-[9px] uppercase tracking-[0.35em] font-sans px-3 py-1 rounded-full inline-block mt-1"
+                      style={{ border: '1px solid rgba(229,252,84,0.3)', color: 'rgba(229,252,84,0.7)', background: 'rgba(229,252,84,0.05)' }}
+                    >
+                      {img.category}
+                    </span>
+                  </motion.div>
+                </div>
+
+                {/* Corner accent */}
+                <div className="absolute bottom-12 right-8 md:right-16 z-10 w-12 h-12 border-b border-r border-titli/20" />
+                <div className="absolute top-8 right-8 md:right-16 z-10 w-12 h-12 border-t border-r border-white/10" />
+              </div>
+            ))}
+          </motion.div>
+
+          {/* HUD overlay: slide counter + progress bar */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 w-64">
+            {/* Progress bar */}
+            <div className="w-full h-px bg-white/10 relative overflow-hidden rounded-full">
+              <motion.div
+                className="absolute top-0 left-0 h-full bg-titli rounded-full"
+                style={{ width: barWidth }}
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-serif text-sm text-titli tabular-nums">{String(slideIndex + 1).padStart(2, '0')}</span>
+              <span className="text-white/20 text-xs">/</span>
+              <span className="text-white/30 text-xs font-sans tabular-nums">{String(totalSlides).padStart(2, '0')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom accent: filmstrip marquee */}
+      <div className="bg-forest py-4 overflow-hidden border-t border-white/5">
+        <motion.p
+          className="text-[10px] uppercase tracking-[0.4em] text-white/15 font-sans text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5 }}
         >
           Every frame holds a world
         </motion.p>
       </div>
-    </section>
+    </>
   );
 }
+
+
 
 // ─── Contact Section ───────────────────────────────────────────────────────
 export function Contact() {
@@ -866,9 +854,10 @@ export function Contact() {
             <motion.button
               type="submit"
               disabled={isSubmitting}
-              className={`mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group ${isSubmitting ? 'opacity-50' : ''}`}
               whileHover={isSubmitting ? {} : { scale: 1.02 }}
               whileTap={isSubmitting ? {} : { scale: 0.98 }}
+              data-cursor="magnetic"
             >
               <span className="relative z-10">{isSubmitting ? 'Sending...' : 'Send Message'}</span>
               {!isSubmitting && (
