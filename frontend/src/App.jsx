@@ -56,7 +56,7 @@ function Footer() {
             <div className="flex items-center gap-4">
               {[
                 { name: 'Instagram', href: 'https://www.instagram.com/titli_foundation.rourkela/', label: 'IG' },
-                { name: 'YouTube', href: 'https://youtube.com/', label: 'YT' },
+                { name: 'YouTube', href: 'https://youtube.com/@titlifoundationrkl?si=9lw06HmKeN5uqobL', label: 'YT' },
               ].map((s) => (
                 <MagneticButton key={s.name} strength={0.5}>
                   <a
