@@ -866,7 +866,7 @@ export function Contact() {
 
           <div className="flex flex-col gap-8">
             {[
-              { label: 'Email', value: 'titlifoundation@rediffmail.com', href: 'mailto:titlifoundation@rediffmail.com' },
+              { label: 'Email', value: 'titlifoundation.rkl@gmail.com', href: 'mailto:titlifoundation.rkl@gmail.com' },
             ].map((item, i) => (
               <motion.div
                 key={i}
