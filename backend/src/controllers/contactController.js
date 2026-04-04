@@ -38,7 +38,7 @@ export const mailContact = async(req, res) => {
             name: "Titli Foundation",
             address: process.env.EMAIL
         },
-        to: "ishanroy3118107@gmail.com",
+        to: "titlifoundation.rkl@gmail.com",
         subject: `New Message from ${name}`,
         html: `
             <div style="background-color: #0B1411; color: #ffffff; padding: 40px; font-family: 'Outfit', sans-serif; border-radius: 8px;">
