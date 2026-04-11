@@ -126,12 +126,14 @@ function PhotoCarousel({ photos, accentColor }) {
           <button
             onClick={() => go((active - 1 + photos.length) % photos.length)}
             className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 md:hover:border-white/30 max-md:border-white/30 flex items-center justify-center text-white/80 md:text-white/60 md:hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
+            data-cursor="magnetic"
           >
             ←
           </button>
           <button
             onClick={() => go((active + 1) % photos.length)}
             className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 border border-white/10 md:hover:border-white/30 max-md:border-white/30 flex items-center justify-center text-white/80 md:text-white/60 md:hover:text-white transition-all duration-300 backdrop-blur-md text-sm"
+            data-cursor="magnetic"
           >
             →
           </button>
@@ -146,6 +148,7 @@ function PhotoCarousel({ photos, accentColor }) {
               key={i}
               onClick={() => go(i)}
               className="rounded-full transition-all duration-300"
+              data-cursor="magnetic"
               style={{
                 width: i === active ? 20 : 6,
                 height: 4,
@@ -255,6 +258,7 @@ export default function EventModal({ event, onClose }) {
                   <button
                     onClick={onClose}
                     className="shrink-0 w-10 h-10 rounded-full border border-white/10 hover:border-white/30 flex items-center justify-center text-white/40 hover:text-white transition-all duration-300 text-lg"
+                    data-cursor="magnetic"
                   >
                     ✕
                   </button>
@@ -309,6 +313,7 @@ export default function EventModal({ event, onClose }) {
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      data-cursor="magnetic"
                     >
                       <span className="relative z-10">Reserve Your Seat</span>
                       <motion.div
@@ -333,6 +338,7 @@ export default function EventModal({ event, onClose }) {
                   <button
                     onClick={onClose}
                     className="text-[10px] uppercase tracking-[0.2em] font-sans text-white/60 md:text-white/30 md:hover:text-white transition-colors duration-300"
+                    data-cursor="magnetic"
                   >
                     Close
                   </button>

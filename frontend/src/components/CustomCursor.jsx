@@ -114,7 +114,7 @@ export default function CustomCursor() {
       {/* Outer trailing ring */}
       <motion.div
         ref={cursorRef}
-        className="fixed top-0 left-0 pointer-events-none z-99999 flex items-center justify-center"
+        className="fixed top-0 left-0 pointer-events-none z-100001 flex items-center justify-center"
         style={{
           x: ringX,
           y: ringY,
@@ -148,7 +148,7 @@ export default function CustomCursor() {
 
       {/* Inner crisp dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-99999 rounded-full bg-titli"
+        className="fixed top-0 left-0 pointer-events-none z-100001 rounded-full bg-titli"
         style={{
           x: rawX,
           y: rawY,
