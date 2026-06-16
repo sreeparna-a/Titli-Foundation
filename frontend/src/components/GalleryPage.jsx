@@ -70,7 +70,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#080e0b] text-white pt-32 md:pt-40 pb-16 px-6 sm:px-14 lg:px-28">
+    <div className="relative min-h-screen bg-[#080e0b] text-white pt-20 md:pt-24 pb-16 px-6 sm:px-14 lg:px-28">
       {/* Film Grain & Deco */}
       <div className="film-grain pointer-events-none opacity-[0.02]" />
 
