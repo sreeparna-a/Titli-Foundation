@@ -13,6 +13,7 @@ import { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { sendMessage } from '../api/api';
 import EventModal from './EventModal';
+import MagneticButton from './MagneticButton';
 
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
 // This ensures `motion` isn't flagged as unused.
@@ -348,6 +349,35 @@ export function Members() {
             <MemberCard key={member.id} member={member} i={i} />
           ))}
         </div>
+
+        {/* View Full Team CTA Button */}
+        <motion.div
+          className="mt-12 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          <MagneticButton strength={0.4}>
+            <a
+              href="/team"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/team');
+                window.dispatchEvent(new Event('popstate'));
+                window.scrollTo(0, 0);
+                if (window.__lenisInstance) {
+                  window.__lenisInstance.scrollTo(0, { immediate: true });
+                }
+              }}
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-titli/30 bg-titli/5 text-titli hover:bg-titli hover:text-forest transition-all duration-500 font-sans text-xs uppercase tracking-widest group cursor-pointer"
+              data-cursor="magnetic"
+            >
+              <span>View Full Team</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+          </MagneticButton>
+        </motion.div>
       </div>
     </section>
   );
@@ -382,7 +412,7 @@ function MemberCard({ member, i }) {
       onMouseMove={handleMouseMove}
     >
       {/* Outer Editorial Border */}
-      <div className="relative aspect-3/4 overflow-hidden bg-forest border border-white/5 group-hover:border-titli/20 transition-colors duration-700">
+      <div className="relative aspect-3/4 overflow-hidden bg-forest border border-white/10 group-hover:border-titli/40 group-hover:shadow-[0_0_30px_rgba(229,252,84,0.15)] transition-all duration-700">
         
         {/* Shutter Animation Overlay */}
         <motion.div 
@@ -399,16 +429,18 @@ function MemberCard({ member, i }) {
         {/* Localized Film Grain */}
         <div className="film-grain" />
 
-        {/* Viewfinder Brackets */}
-        <div className="viewfinder-bracket viewfinder-bracket-tl group-hover:bg-titli/10" />
-        <div className="viewfinder-bracket viewfinder-bracket-tr group-hover:bg-titli/10" />
-        <div className="viewfinder-bracket viewfinder-bracket-bl group-hover:bg-titli/10" />
-        <div className="viewfinder-bracket viewfinder-bracket-br group-hover:bg-titli/10" />
+        {/* Viewfinder Brackets - Animates inwards and lights up to titli on hover */}
+        <div className="viewfinder-bracket viewfinder-bracket-tl group-hover:border-titli group-hover:translate-x-1 group-hover:translate-y-1" />
+        <div className="viewfinder-bracket viewfinder-bracket-tr group-hover:border-titli group-hover:-translate-x-1 group-hover:translate-y-1" />
+        <div className="viewfinder-bracket viewfinder-bracket-bl group-hover:border-titli group-hover:translate-x-1 group-hover:-translate-y-1" />
+        <div className="viewfinder-bracket viewfinder-bracket-br group-hover:border-titli group-hover:-translate-x-1 group-hover:-translate-y-1" />
 
         {/* Technical Metadata Overlays */}
         <div className="absolute top-4 left-0 right-0 px-6 z-10 flex justify-between items-start pointer-events-none">
           <div className="flex flex-col gap-1">
-            <span className="text-[7px] font-sans text-titli/30 uppercase tracking-[0.3em]">REC ●</span>
+            <span className="text-[7px] font-sans text-titli/50 uppercase tracking-[0.3em] flex items-center gap-1">
+              REC <span className="text-red-500 animate-pulse">●</span>
+            </span>
             <span className="text-[8px] font-sans text-white/20 uppercase tracking-[0.2em]">0{member.id} // PERS</span>
           </div>
           <div className="text-right">
@@ -430,12 +462,12 @@ function MemberCard({ member, i }) {
           }}
         />
 
-        {/* Image */}
+        {/* Image - Fully colored by default, zooms in smoothly on hover */}
         <img
           src={member.img}
           alt={member.name}
           loading="lazy"
-          className="w-full h-full object-cover filter grayscale-0 lg:grayscale lg:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-110 lg:group-hover:scale-100 opacity-100 lg:opacity-40 lg:group-hover:opacity-100"
+          className="w-full h-full object-cover transition-all duration-700 ease-out scale-100 group-hover:scale-108 opacity-90 group-hover:opacity-100"
         />
 
         {/* Bottom Info Overlay */}
@@ -443,7 +475,7 @@ function MemberCard({ member, i }) {
           <div className="relative translate-y-0 lg:translate-y-2 lg:group-hover:translate-y-0 transition-transform duration-700 ease-out">
             <h4 className="font-serif text-xl sm:text-2xl text-white leading-tight mb-1">{member.name}</h4>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-px bg-titli/40" />
+              <span className="w-8 group-hover:w-16 h-px bg-titli/40 group-hover:bg-titli transition-all duration-700" />
               <p className="font-sans text-[9px] uppercase tracking-[0.3em] text-titli/80">
                 {member.role}
               </p>
@@ -456,7 +488,7 @@ function MemberCard({ member, i }) {
 }
 
 // ─── Gallery Section ───────────────────────────────────────────────────────
-const galleryData = [
+export const galleryData = [
   {
     src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80',
     alt: 'Theatre stage with dramatic lighting',
@@ -506,7 +538,6 @@ const CATEGORIES = ['All', 'Theatre', 'Film', 'Art'];
 export function Gallery() {
   const containerRef = useRef(null);
   const stickyRef = useRef(null);
-  const [activeCategory, setActiveCategory] = useState('All');
 
   const { width } = useWindowSize();
   const isDesktop = width >= 1024;
@@ -522,9 +553,7 @@ export function Gallery() {
     window.dispatchEvent(new CustomEvent('gallery-active', { detail: isActive }));
   });
 
-  const filtered = galleryData.filter(
-    (img) => activeCategory === 'All' || img.category === activeCategory
-  );
+  const filtered = galleryData;
 
   // Each panel is 100vw wide. We shift the track by (N-1) * 100vw total.
   // scrollYProgress 0→1 maps from 0vw to -(totalSlides-1)*100vw
@@ -592,29 +621,33 @@ export function Gallery() {
             </span>
           </motion.p>
 
-          {/* Category filter */}
+          {/* View Full Gallery CTA Button */}
           <motion.div
-            className="flex items-center gap-2 border border-white/10 p-1 rounded-full w-max"
+            className="pb-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            {CATEGORIES.map((cat) => (
-              <motion.button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                whileTap={{ scale: 0.94 }}
+            <MagneticButton strength={0.4}>
+              <a
+                href="/gallery"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState({}, '', '/gallery');
+                  window.dispatchEvent(new Event('popstate'));
+                  window.scrollTo(0, 0);
+                  if (window.__lenisInstance) {
+                    window.__lenisInstance.scrollTo(0, { immediate: true });
+                  }
+                }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-titli/30 bg-titli/5 text-titli hover:bg-titli hover:text-forest transition-all duration-500 font-sans text-xs uppercase tracking-widest group cursor-pointer"
                 data-cursor="magnetic"
-                className={`text-[10px] uppercase tracking-widest font-sans px-4 py-2 rounded-full transition-all duration-300 ${
-                  activeCategory === cat
-                    ? 'bg-titli text-forest font-medium'
-                    : 'text-white/40 hover:text-white'
-                }`}
               >
-                {cat}
-              </motion.button>
-            ))}
+                <span>View Full Gallery</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </MagneticButton>
           </motion.div>
         </div>
 
@@ -657,7 +690,7 @@ export function Gallery() {
                     src={`${img.src}?q=75`}
                     alt={img.alt}
                     loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-1000 ease-out scale-105 group-hover:scale-100"
+                    className="absolute inset-0 w-full h-full object-cover grayscale-0 transition-all duration-1000 ease-out scale-105 group-hover:scale-100"
                     style={{ willChange: 'transform' }}
                   />
 

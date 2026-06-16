@@ -17,19 +17,79 @@ const navItems = [
 export default function Navbar() {
   const [isGalleryActive, setIsGalleryActive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState(
+    window.location.pathname.replace(/\/$/, '') || '/'
+  );
 
   useEffect(() => {
     const handleGallery = (e) => setIsGalleryActive(e.detail);
     window.addEventListener('gallery-active', handleGallery);
-    return () => window.removeEventListener('gallery-active', handleGallery);
+    
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('gallery-active', handleGallery);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   const scrollTo = (href) => {
     setMenuOpen(false);
-    setTimeout(() => {
-      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
+    const path = window.location.pathname.replace(/\/$/, '');
+    if (path === '/gallery' || path === '/team') {
+      window.history.pushState({}, '', '/');
+      window.dispatchEvent(new Event('popstate'));
+      setTimeout(() => {
+        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+      }, 250);
+    } else {
+      setTimeout(() => {
+        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
   };
+
+  const handleNavClick = (e, item) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    
+    if (item.name === 'Gallery') {
+      if (window.location.pathname.replace(/\/$/, '') !== '/gallery') {
+        window.history.pushState({}, '', '/gallery');
+        window.dispatchEvent(new Event('popstate'));
+        window.scrollTo(0, 0);
+        if (window.__lenisInstance) {
+          window.__lenisInstance.scrollTo(0, { immediate: true });
+        }
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.__lenisInstance) {
+          window.__lenisInstance.scrollTo(0);
+        }
+      }
+    } else if (item.name === 'Members') {
+      if (window.location.pathname.replace(/\/$/, '') !== '/team') {
+        window.history.pushState({}, '', '/team');
+        window.dispatchEvent(new Event('popstate'));
+        window.scrollTo(0, 0);
+        if (window.__lenisInstance) {
+          window.__lenisInstance.scrollTo(0, { immediate: true });
+        }
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.__lenisInstance) {
+          window.__lenisInstance.scrollTo(0);
+        }
+      }
+    } else {
+      scrollTo(item.href);
+    }
+  };
+
+  const hideNavbar = currentPath === '/' && isGalleryActive;
 
   const navItemVariants = {
     initial: { opacity: 0, y: 30, filter: 'blur(10px)' },
@@ -62,9 +122,9 @@ export default function Navbar() {
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-10 py-4 md:py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
         animate={{ 
-          y: isGalleryActive ? -120 : 0, 
-          opacity: isGalleryActive ? 0 : 1,
-          pointerEvents: isGalleryActive ? 'none' : 'auto'
+          y: hideNavbar ? -120 : 0, 
+          opacity: hideNavbar ? 0 : 1,
+          pointerEvents: hideNavbar ? 'none' : 'auto'
         }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         style={{
@@ -164,7 +224,7 @@ export default function Navbar() {
                   <a
                     href={item.href}
                     className="relative block py-2 px-10 text-center"
-                    onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                    onClick={(e) => handleNavClick(e, item)}
                     data-cursor="magnetic"
                   >
                     {/* Hover Glow Effect */}

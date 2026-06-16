@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import Preloader from './components/Preloader';
 import SmoothScroller from './components/SmoothScroller';
@@ -13,6 +13,8 @@ import { Events, Members, Gallery, Contact } from './components/Sections';
 import CustomCursor from './components/CustomCursor';
 import ButterflyParticle from './components/ButterflyParticle';
 import MagneticButton from './components/MagneticButton';
+import GalleryPage from './components/GalleryPage';
+import TeamPage from './components/TeamPage';
 
 void motion;
 
@@ -134,8 +136,93 @@ const sections = [
   },
 ];
 
+// LandingPage component to encapsulate the homepage section cards and handle scroll reset
+function LandingPage({ isLoaded }) {
+  useEffect(() => {
+    // If no hash in URL, scroll to top on mount
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
+      window.__lenisInstance?.scrollTo(0, { immediate: true });
+    }
+  }, []);
+
+  return (
+    <>
+      <ThreadedLine />
+      <main>
+        <Hero isLoaded={isLoaded} />
+
+        {/* Card stacking container */}
+        <div className="relative z-20 bg-forest">
+          {sections.map(({ Component, id, divider }, index) => {
+            // ESLint in this repo doesn't treat `<Component />` usage as a "use".
+            void Component;
+            return (
+              <div key={id}>
+                {/* Cinematic section divider */}
+                <SectionDivider
+                  variant={divider.variant}
+                  accentColor={divider.accentColor}
+                  label={divider.label}
+                />
+
+                <CardStackSection 
+                  index={index} 
+                  totalCards={sections.length}
+                  noOverflow={id === 'gallery'}
+                >
+                  <div className="bg-forest">
+                    <Component />
+                  </div>
+                </CardStackSection>
+              </div>
+            );
+          })}
+        </div>
+      </main>
+    </>
+  );
+}
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+    filter: 'blur(8px)',
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    filter: 'blur(8px)',
+    transition: {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [currentPath, setCurrentPath] = useState(
+    window.location.pathname.replace(/\/$/, '') || '/'
+  );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   return (
     <SmoothScroller>
@@ -159,39 +246,47 @@ export default function App() {
         
         <div className="relative overflow-hidden sm:overflow-visible">
           <Navbar isLoaded={isLoaded} />
-          <ThreadedLine />
           
-          <main>
-            <Hero isLoaded={isLoaded} />
-
-            {/* Card stacking container */}
-            <div className="relative z-20 bg-forest">
-              {sections.map(({ Component, id, divider }, index) => {
-                // ESLint in this repo doesn't treat `<Component />` usage as a "use".
-                void Component;
-                return (
-                  <div key={id}>
-                    {/* Cinematic section divider */}
-                    <SectionDivider
-                      variant={divider.variant}
-                      accentColor={divider.accentColor}
-                      label={divider.label}
-                    />
-
-                    <CardStackSection 
-                      index={index} 
-                      totalCards={sections.length}
-                      noOverflow={id === 'gallery'}
-                    >
-                      <div className="bg-forest">
-                        <Component />
-                      </div>
-                    </CardStackSection>
-                  </div>
-                );
-              })}
-            </div>
-          </main>
+          <AnimatePresence mode="wait">
+            {currentPath === '/gallery' ? (
+              <motion.div
+                key="gallery-page"
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={pageVariants}
+                className="w-full"
+              >
+                <main>
+                  <GalleryPage />
+                </main>
+              </motion.div>
+            ) : currentPath === '/team' ? (
+              <motion.div
+                key="team-page"
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={pageVariants}
+                className="w-full"
+              >
+                <main>
+                  <TeamPage />
+                </main>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="home-page"
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                variants={pageVariants}
+                className="w-full"
+              >
+                <LandingPage isLoaded={isLoaded} />
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           <Footer />
         </div>

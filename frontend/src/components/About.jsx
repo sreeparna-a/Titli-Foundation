@@ -21,6 +21,8 @@ const ScrollWord = ({ children, progress, range }) => {
   );
 };
 
+import aboutImg from '../assets/about_theatre.png';
+
 export default function About() {
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
@@ -37,6 +39,8 @@ export default function About() {
 
   const bgY = useTransform(sectionProgress, [0, 1], ['0%', '-12%']);
   const bgScale = useTransform(sectionProgress, [0, 1], [1.05, 1]);
+  const photoY = useTransform(sectionProgress, [0, 1], [30, -35]);
+  const headlineY = useTransform(sectionProgress, [0, 1], [-15, 15]);
 
   const text1 =
     'Established with a deep appreciation for the classical and the contemporary, the Titli Foundation nurtures visionaries in theatre, film, and art. We are a sanctuary for storytellers who dare to push boundaries.';
@@ -68,12 +72,13 @@ export default function About() {
         style={{ background: 'radial-gradient(circle, rgba(41,122,81,0.08) 0%, transparent 70%)' }}
       />
 
-      <div className="max-w-4xl mx-auto w-full relative z-10 pl-0 sm:pl-12 lg:pl-24">
-
-        {/* Section tag */}
+      {/* 2-Column / 3-Row Grid Container */}
+      <div className="max-w-6xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-x-12 lg:gap-x-20 gap-y-4 lg:gap-y-0 items-stretch">
+        
+        {/* 1. Section Tag */}
         <motion.div
-          className="flex items-center gap-4 mb-8"
-          initial={{ opacity: 0, x: -60 }}
+          className="order-1 lg:col-start-6 lg:col-span-7 lg:row-start-1 flex items-center gap-4 mb-4 lg:mb-6"
+          initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -97,13 +102,14 @@ export default function About() {
           <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">The Vision</h2>
         </motion.div>
 
-        {/* Headline reveal */}
+        {/* 2. Headline */}
         <motion.h3
-          className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-serif text-white leading-tight mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          style={{ y: headlineY }}
+          className="order-2 lg:col-start-6 lg:col-span-7 lg:row-start-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif text-white leading-tight mb-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.2, delay: 0.15, ease: 'easeOut' }}
         >
           An independent{' '}
           <span className="text-titli italic md:text-stroke md:text-stroke-hover transition-colors cursor-default">
@@ -112,54 +118,120 @@ export default function About() {
           community bridging the gap between raw artistic expression and social impact.
         </motion.h3>
 
-        {/* Scroll-animated words */}
-        <div
-          ref={containerRef}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 font-sans text-white text-base md:text-lg font-light leading-relaxed"
-        >
-          <p>
-            {words1.map((word, i) => (
-              <ScrollWord
-                key={`w1-${i}`}
-                progress={scrollYProgress}
-                range={wordOpacityRange(i, totalWords)}
-              >
-                {word}
-              </ScrollWord>
-            ))}
-          </p>
-          <p>
-            {words2.map((word, i) => (
-              <ScrollWord
-                key={`w2-${i}`}
-                progress={scrollYProgress}
-                range={wordOpacityRange(i + words1.length, totalWords)}
-              >
-                {word}
-              </ScrollWord>
-            ))}
-          </p>
-        </div>
-
-        {/* Bottom counter / decoration */}
+        {/* 3. Left Column: Interactive Theater Image */}
         <motion.div
-          className="mt-12 md:mt-20 flex items-center gap-4 sm:gap-6 flex-wrap"
-          initial={{ opacity: 0, y: 20 }}
+          className="order-3 lg:col-span-5 lg:row-start-2 flex justify-center lg:justify-end items-center lg:items-start w-full mb-8 lg:mb-0 lg:h-full"
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          {[
-            { num: '12+', label: 'Years of Art' },
-            { num: '60+', label: 'Productions' },
-            { num: '∞', label: 'Stories Told' },
-          ].map((stat, i) => (
-            <div key={i} className="flex flex-col items-center border-l border-white/10 pl-4 sm:pl-6 first:border-0 first:pl-0">
-              <span className="font-serif text-2xl sm:text-3xl text-titli">{stat.num}</span>
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 font-sans mt-1">{stat.label}</span>
-            </div>
-          ))}
+          {/* Main card/image frame with scroll parallax */}
+          <motion.div
+            style={{ y: photoY }}
+            className="relative w-full aspect-4/5 lg:w-auto lg:h-[94%] lg:aspect-3/4 max-w-[380px] lg:max-w-none group"
+          >
+            
+            {/* Viewfinder Brackets with hover contraction */}
+            <div className="viewfinder-bracket viewfinder-bracket-tl transition-all duration-500 group-hover:translate-x-1.5 group-hover:translate-y-1.5" />
+            <div className="viewfinder-bracket viewfinder-bracket-tr transition-all duration-500 group-hover:-translate-x-1.5 group-hover:translate-y-1.5" />
+            <div className="viewfinder-bracket viewfinder-bracket-bl transition-all duration-500 group-hover:translate-x-1.5 group-hover:-translate-y-1.5" />
+            <div className="viewfinder-bracket viewfinder-bracket-br transition-all duration-500 group-hover:-translate-x-1.5 group-hover:-translate-y-1.5" />
+
+            {/* Glowing borders behind the image */}
+            <div className="absolute inset-0 bg-accent-green/5 rounded-lg blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+            <div className="absolute inset-0 bg-titli/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none delay-100" />
+            
+            {/* The Image Container with Clip Reveal and Hover Scale */}
+            <motion.div
+              className="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-[#0c1410] select-none shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+              initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
+              whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              whileHover={{ 
+                scale: 1.03,
+                boxShadow: "0 30px 60px rgba(0,0,0,0.8), 0 0 30px rgba(229,252,84,0.15)",
+              }}
+            >
+              {/* Image itself */}
+              <img
+                src={aboutImg}
+                alt="Titli Cinematic Stage"
+                className="w-full h-full object-cover grayscale-15 group-hover:grayscale-0 contrast-105 group-hover:scale-105 transition-all duration-700 ease-out"
+                draggable="false"
+              />
+
+              {/* Light leak overlay effect */}
+              <div className="light-leak opacity-40 group-hover:opacity-75 transition-opacity duration-700" />
+
+              {/* Localized Film Grain */}
+              <div className="film-grain" />
+
+              {/* Inner ambient vignette shadow */}
+              <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] pointer-events-none" />
+
+              {/* Title tag revealed on hover */}
+              <div className="absolute bottom-6 left-6 right-6 z-10 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out pointer-events-none">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-sans text-titli/90">Sanctuary of Stories</p>
+                <h4 className="text-sm font-serif italic text-white mt-1">Est. 2008</h4>
+              </div>
+            </motion.div>
+          </motion.div>
         </motion.div>
+
+        {/* 4. Narrative Content */}
+        <div className="order-4 lg:col-start-6 lg:col-span-7 lg:row-start-3 flex flex-col justify-start lg:mt-8">
+          
+          {/* Scroll-animated words */}
+          <div
+            ref={containerRef}
+            className="font-sans text-white/90 text-base sm:text-lg lg:text-xl font-light leading-relaxed space-y-6 max-w-2xl"
+          >
+            <p>
+              {words1.map((word, i) => (
+                <ScrollWord
+                  key={`w1-${i}`}
+                  progress={scrollYProgress}
+                  range={wordOpacityRange(i, totalWords)}
+                >
+                  {word}
+                </ScrollWord>
+              ))}
+            </p>
+            <p>
+              {words2.map((word, i) => (
+                <ScrollWord
+                  key={`w2-${i}`}
+                  progress={scrollYProgress}
+                  range={wordOpacityRange(i + words1.length, totalWords)}
+                >
+                  {word}
+                </ScrollWord>
+              ))}
+            </p>
+          </div>
+
+          {/* Bottom counter / decoration */}
+          <motion.div
+            className="mt-10 md:mt-12 flex items-center gap-4 sm:gap-8 flex-wrap"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            {[
+              { num: '12+', label: 'Years of Art' },
+              { num: '60+', label: 'Productions' },
+              { num: '∞', label: 'Stories Told' },
+            ].map((stat, i) => (
+              <div key={i} className="flex flex-col items-start border-l border-white/10 pl-4 sm:pl-6 first:border-0 first:pl-0">
+                <span className="font-serif text-2xl sm:text-3xl lg:text-4xl text-titli">{stat.num}</span>
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-white/40 font-sans mt-1">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
