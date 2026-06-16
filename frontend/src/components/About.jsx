@@ -221,7 +221,7 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             {[
-              { num: '12+', label: 'Years of Art' },
+              { num: '15+', label: 'Years of Art' },
               { num: '60+', label: 'Productions' },
               { num: '∞', label: 'Stories Told' },
             ].map((stat, i) => (

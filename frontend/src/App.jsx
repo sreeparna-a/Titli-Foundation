@@ -15,6 +15,7 @@ import ButterflyParticle from './components/ButterflyParticle';
 import MagneticButton from './components/MagneticButton';
 import GalleryPage from './components/GalleryPage';
 import TeamPage from './components/TeamPage';
+import PageTransition from './components/PageTransition';
 
 void motion;
 
@@ -247,44 +248,23 @@ export default function App() {
         <div className="relative overflow-hidden sm:overflow-visible">
           <Navbar isLoaded={isLoaded} />
           
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             {currentPath === '/gallery' ? (
-              <motion.div
-                key="gallery-page"
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={pageVariants}
-                className="w-full"
-              >
+              <PageTransition key="gallery-page">
                 <main>
                   <GalleryPage />
                 </main>
-              </motion.div>
+              </PageTransition>
             ) : currentPath === '/team' ? (
-              <motion.div
-                key="team-page"
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={pageVariants}
-                className="w-full"
-              >
+              <PageTransition key="team-page">
                 <main>
                   <TeamPage />
                 </main>
-              </motion.div>
+              </PageTransition>
             ) : (
-              <motion.div
-                key="home-page"
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                variants={pageVariants}
-                className="w-full"
-              >
+              <PageTransition key="home-page">
                 <LandingPage isLoaded={isLoaded} />
-              </motion.div>
+              </PageTransition>
             )}
           </AnimatePresence>
           

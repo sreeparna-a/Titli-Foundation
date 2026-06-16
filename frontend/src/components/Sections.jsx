@@ -341,7 +341,7 @@ export function Members() {
           delay={0.1}
           className="font-serif text-white/50 text-[14px] md:text-[18px] mb-12 max-w-2xl leading-relaxed italic"
         >
-          A collective of visionaries, performers, and architects of light. Each frame holds a story, each face a testament to the art of transformation.
+          A collective of visionaries and performers. Each frame holds a story, each face a testament to the art of transformation.
         </RevealText>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
@@ -615,10 +615,7 @@ export function Gallery() {
             viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.15 }}
           >
-            "Art is not what you see,<br />but what you make others see."
-            <span className="block text-[11px] not-italic uppercase tracking-widest text-white/30 font-sans mt-2">
-              — Edgar Degas
-            </span>
+            Traverse the imaginary world of theatre and art
           </motion.p>
 
           {/* View Full Gallery CTA Button */}

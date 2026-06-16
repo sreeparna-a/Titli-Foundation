@@ -101,29 +101,29 @@ export default function Hero({ isLoaded }) {
         className="relative z-10 text-center px-6 w-full max-w-5xl mx-auto flex flex-col items-center"
         style={{ y: contentY, opacity: contentOpacity }}
       >
-        {/* "Titli" — SplitText per-char reveal */}
-        <div className="overflow-visible mb-0 sm:mb-1">
-          <div className="text-[3.2rem] xs:text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-serif text-titli leading-none">
+        {/* Main Heading — "Theatre Institute of Technical Learning and Integration" */}
+        <div className="overflow-visible mb-2 sm:mb-4 max-w-4xl mx-auto">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-titli leading-tight tracking-[0.02em]">
             <SplitText
-              text="Titli"
-              mode="chars"
-              stagger={0.08}
-              delay={0.8}
+              text="Theatre Institute of Technical Learning and Integration"
+              mode="words"
+              stagger={0.06}
+              delay={0.6}
               trigger={isLoaded}
               viewport={false}
             />
-          </div>
+          </h1>
         </div>
 
-        {/* "FOUNDATION" — clean white reveal */}
-        <div className="overflow-hidden mb-6 sm:mb-8">
+        {/* Subheading — "managed by Titli Foundation" */}
+        <div className="overflow-hidden mb-8 sm:mb-10">
           <motion.h2
-            className="shimmer-text text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-sans font-extralight tracking-[0.25em]"
+            className="shimmer-text text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl font-sans font-light tracking-[0.2em] text-white/90 uppercase"
             initial={{ y: '-100%' }}
             animate={{ y: isLoaded ? '0%' : '-100%' }}
-            transition={{ duration: 1.2, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            FOUNDATION
+            managed by Titli Foundation
           </motion.h2>
         </div>
 
@@ -135,7 +135,7 @@ export default function Hero({ isLoaded }) {
           transition={{ duration: 1.5, delay: 1.8 }}
         >
           <p className="text-xs sm:text-sm md:text-lg font-sans text-white/70 tracking-[0.2em] sm:tracking-[0.3em] uppercase mb-2">
-            Theatre and Cinema
+            Theatre and Art
           </p>
           <div className="flex items-center gap-3 sm:gap-4">
             <motion.span
