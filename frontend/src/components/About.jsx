@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
@@ -26,6 +26,7 @@ import aboutImg from '../assets/about_theatre.png';
 export default function About() {
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -102,14 +103,13 @@ export default function About() {
           <h2 className="text-xs md:text-sm uppercase tracking-[0.3em] font-sans text-white/50">The Vision</h2>
         </motion.div>
 
-        {/* 2. Headline */}
+        {/* 2. Headline with text reveal animation */}
         <motion.h3
-          style={{ y: headlineY }}
-          className="order-2 lg:col-start-6 lg:col-span-7 lg:row-start-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif text-white leading-tight mb-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 1.2, delay: 0.15, ease: 'easeOut' }}
+          initial={{ opacity: 0, filter: 'blur(5px)' }}
+          animate={isInView ? { opacity: 1, filter: 'blur(0px)' } : { opacity: 0, filter: 'blur(5px)' }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          style={{ willChange: 'filter, opacity' }}
+          className="order-2 lg:col-start-6 lg:col-span-7 lg:row-start-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif text-white leading-tight mb-8 py-1"
         >
           An independent{' '}
           <span className="text-titli italic md:text-stroke md:text-stroke-hover transition-colors cursor-default">
@@ -122,13 +122,12 @@ export default function About() {
         <motion.div
           className="order-3 lg:col-span-5 lg:row-start-2 flex justify-center lg:justify-end items-center lg:items-start w-full mb-8 lg:mb-0 lg:h-full"
           initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          style={{ willChange: 'transform, opacity' }}
         >
-          {/* Main card/image frame with scroll parallax */}
-          <motion.div
-            style={{ y: photoY }}
+          {/* Main card/image frame */}
+          <div
             className="relative w-full aspect-4/5 lg:w-auto lg:h-[94%] lg:aspect-3/4 max-w-[380px] lg:max-w-none group"
           >
             
@@ -142,18 +141,23 @@ export default function About() {
             <div className="absolute inset-0 bg-accent-green/5 rounded-lg blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <div className="absolute inset-0 bg-titli/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none delay-100" />
             
-            {/* The Image Container with Clip Reveal and Hover Scale */}
+            {/* The Image Container with Curtain (Card) Reveal and Hover Scale */}
             <motion.div
               className="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-[#0c1410] select-none shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
-              initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-              whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
               whileHover={{ 
                 scale: 1.03,
                 boxShadow: "0 30px 60px rgba(0,0,0,0.8), 0 0 30px rgba(229,252,84,0.15)",
               }}
             >
+              {/* Card Curtain Reveal Overlay (Top to Bottom) */}
+              <motion.div 
+                className="absolute inset-0 z-20 pointer-events-none"
+                style={{ background: '#0B1411', willChange: 'transform' }}
+                initial={{ y: '0%' }}
+                animate={isInView ? { y: '100%' } : { y: '0%' }}
+                transition={{ duration: 1.1, delay: 0.25, ease: [0.76, 0, 0.24, 1] }}
+              />
+
               {/* Image itself */}
               <img
                 src={aboutImg}
@@ -177,7 +181,7 @@ export default function About() {
                 <h4 className="text-sm font-serif italic text-white mt-1">Est. 2008</h4>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* 4. Narrative Content */}
