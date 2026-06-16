@@ -16,6 +16,7 @@ const navItems = [
 
 export default function Navbar() {
   const [isGalleryActive, setIsGalleryActive] = useState(false);
+  const [isLightboxActive, setIsLightboxActive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState(
     window.location.pathname.replace(/\/$/, '') || '/'
@@ -24,6 +25,9 @@ export default function Navbar() {
   useEffect(() => {
     const handleGallery = (e) => setIsGalleryActive(e.detail);
     window.addEventListener('gallery-active', handleGallery);
+
+    const handleLightbox = (e) => setIsLightboxActive(e.detail);
+    window.addEventListener('lightbox-active', handleLightbox);
     
     const handlePopState = () => {
       setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
@@ -32,6 +36,7 @@ export default function Navbar() {
     
     return () => {
       window.removeEventListener('gallery-active', handleGallery);
+      window.removeEventListener('lightbox-active', handleLightbox);
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
@@ -89,7 +94,7 @@ export default function Navbar() {
     }
   };
 
-  const hideNavbar = currentPath === '/' && isGalleryActive;
+  const hideNavbar = (currentPath === '/' && isGalleryActive) || isLightboxActive;
 
   const navItemVariants = {
     initial: { opacity: 0, y: 30, filter: 'blur(10px)' },
@@ -118,8 +123,8 @@ export default function Navbar() {
   return (
     <>
       {/* ── Universal Top Bar ─────────────────────────────────────────── */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-10 py-4 md:py-5 transition-all duration-500"
+      <motion.header
+        className="universal-navbar fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-10 py-4 md:py-5 transition-all duration-500"
         initial={{ y: -100, opacity: 0 }}
         animate={{ 
           y: hideNavbar ? -120 : 0, 
@@ -189,7 +194,7 @@ export default function Navbar() {
           <div className="absolute inset-0 bg-titli/5 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full -z-10" />
         </button>
         </MagneticButton>
-      </motion.div>
+      </motion.header>
 
       {/* ── Fullscreen Overlay Menu ──────────────────────────────────── */}
       <AnimatePresence>

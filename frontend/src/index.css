@@ -243,7 +243,7 @@ body {
 }
 
 /* Hide and disable other layout elements when gallery lightbox is open */
-body.lightbox-open .fixed.top-0, /* Universal Top Bar (Navbar) */
+body.lightbox-open .universal-navbar, /* Universal Top Bar (Navbar) */
 body.lightbox-open .fixed.inset-0.z-40, /* Fullscreen Overlay Menu */
 body.lightbox-open footer, /* Footer */
 body.lightbox-open .fixed.bottom-20 /* Butterfly Particle */ {

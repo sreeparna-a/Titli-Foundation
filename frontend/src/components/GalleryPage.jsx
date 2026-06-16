@@ -42,13 +42,16 @@ export default function GalleryPage() {
     if (lightboxIndex !== null) {
       window.__lenisInstance?.stop();
       document.body.classList.add('lightbox-open');
+      window.dispatchEvent(new CustomEvent('lightbox-active', { detail: true }));
     } else {
       window.__lenisInstance?.start();
       document.body.classList.remove('lightbox-open');
+      window.dispatchEvent(new CustomEvent('lightbox-active', { detail: false }));
     }
     return () => {
       window.__lenisInstance?.start();
       document.body.classList.remove('lightbox-open');
+      window.dispatchEvent(new CustomEvent('lightbox-active', { detail: false }));
     };
   }, [lightboxIndex]);
 
