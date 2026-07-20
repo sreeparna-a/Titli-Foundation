@@ -366,10 +366,6 @@ export function Members() {
                 e.preventDefault();
                 window.history.pushState({}, '', '/team');
                 window.dispatchEvent(new Event('popstate'));
-                window.scrollTo(0, 0);
-                if (window.__lenisInstance) {
-                  window.__lenisInstance.scrollTo(0, { immediate: true });
-                }
               }}
               className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-titli/30 bg-titli/5 text-titli hover:bg-titli hover:text-forest transition-all duration-500 font-sans text-xs uppercase tracking-widest group cursor-pointer"
               data-cursor="magnetic"
@@ -656,10 +652,6 @@ export function Gallery() {
                   e.preventDefault();
                   window.history.pushState({}, '', '/gallery');
                   window.dispatchEvent(new Event('popstate'));
-                  window.scrollTo(0, 0);
-                  if (window.__lenisInstance) {
-                    window.__lenisInstance.scrollTo(0, { immediate: true });
-                  }
                 }}
                 className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-titli/30 bg-titli/5 text-titli hover:bg-titli hover:text-forest transition-all duration-500 font-sans text-xs uppercase tracking-widest group cursor-pointer"
                 data-cursor="magnetic"

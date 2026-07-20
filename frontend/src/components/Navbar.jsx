@@ -64,14 +64,18 @@ export default function Navbar() {
     setMenuOpen(false);
     const path = window.location.pathname.replace(/\/$/, '');
     if (path === '/gallery' || path === '/team') {
-      window.history.pushState({}, '', '/');
+      window.history.pushState({}, '', href === '#hero' ? '/' : '/' + href);
       window.dispatchEvent(new Event('popstate'));
-      setTimeout(() => {
-        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-      }, 250);
     } else {
       setTimeout(() => {
-        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+        const target = document.querySelector(href);
+        if (target) {
+          if (window.__lenisInstance) {
+            window.__lenisInstance.scrollTo(target);
+          } else {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
       }, 50);
     }
   };
@@ -84,10 +88,6 @@ export default function Navbar() {
       if (window.location.pathname.replace(/\/$/, '') !== '/gallery') {
         window.history.pushState({}, '', '/gallery');
         window.dispatchEvent(new Event('popstate'));
-        window.scrollTo(0, 0);
-        if (window.__lenisInstance) {
-          window.__lenisInstance.scrollTo(0, { immediate: true });
-        }
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (window.__lenisInstance) {
@@ -98,10 +98,6 @@ export default function Navbar() {
       if (window.location.pathname.replace(/\/$/, '') !== '/team') {
         window.history.pushState({}, '', '/team');
         window.dispatchEvent(new Event('popstate'));
-        window.scrollTo(0, 0);
-        if (window.__lenisInstance) {
-          window.__lenisInstance.scrollTo(0, { immediate: true });
-        }
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (window.__lenisInstance) {

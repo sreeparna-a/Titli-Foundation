@@ -119,10 +119,6 @@ export default function TeamPage() {
     e.preventDefault();
     window.history.pushState({}, '', '/');
     window.dispatchEvent(new Event('popstate'));
-    // Wait a brief moment for App.jsx to render Home, then scroll to members section
-    setTimeout(() => {
-      document.querySelector('#members')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   };
 
   return (
@@ -192,7 +188,7 @@ export default function TeamPage() {
       </div>
 
       {/* Team Grid */}
-      <div className="max-w-7xl mx-auto pl-0 lg:pl-24 relative z-10 min-h-[400px]">
+      <div className="max-w-7xl mx-auto pl-0 lg:pl-24 relative z-10 min-h-100">
         <motion.div
           layout
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
@@ -284,7 +280,7 @@ export default function TeamPage() {
               </button>
 
               {/* Left Side: Photo */}
-              <div className="w-full md:w-1/2 aspect-square md:aspect-auto relative min-h-[300px] md:h-[500px]">
+              <div className="w-full md:w-1/2 aspect-square md:aspect-auto relative min-h-75 md:h-125">
                 {/* Viewfinder brackets inside modal */}
                 <div className="viewfinder-bracket viewfinder-bracket-tl top-6 left-6" />
                 <div className="viewfinder-bracket viewfinder-bracket-tr top-6 right-6" />

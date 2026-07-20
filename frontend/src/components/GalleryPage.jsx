@@ -59,10 +59,6 @@ export default function GalleryPage() {
     e.preventDefault();
     window.history.pushState({}, '', '/');
     window.dispatchEvent(new Event('popstate'));
-    // Wait a brief moment for App.jsx to render Home, then scroll to gallery section
-    setTimeout(() => {
-      document.querySelector('#gallery')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   };
 
   const handleNext = (e) => {
@@ -143,7 +139,7 @@ export default function GalleryPage() {
         </div>
 
         {/* Gallery Grid */}
-        <div className="max-w-7xl mx-auto pl-0 lg:pl-24 relative z-10 min-h-[400px]">
+        <div className="max-w-7xl mx-auto pl-0 lg:pl-24 relative z-10 min-h-100">
           <motion.div
             layout
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"

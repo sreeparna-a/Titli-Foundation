@@ -140,8 +140,19 @@ const sections = [
 // LandingPage component to encapsulate the homepage section cards and handle scroll reset
 function LandingPage({ isLoaded }) {
   useEffect(() => {
-    // If no hash in URL, scroll to top on mount
-    if (!window.location.hash) {
+    if (window.location.hash) {
+      const hash = window.location.hash;
+      requestAnimationFrame(() => {
+        const el = document.querySelector(hash);
+        if (el) {
+          if (window.__lenisInstance) {
+            window.__lenisInstance.scrollTo(el, { immediate: true });
+          } else {
+            el.scrollIntoView();
+          }
+        }
+      });
+    } else {
       window.scrollTo(0, 0);
       window.__lenisInstance?.scrollTo(0, { immediate: true });
     }
