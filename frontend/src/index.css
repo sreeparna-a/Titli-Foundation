@@ -27,9 +27,14 @@ body {
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Hide native cursor everywhere on desktop (min-width: 1024px) ─── */
+img {
+  content-visibility: auto;
+}
+
+/* ─── Hide native cursor everywhere on desktop with fine pointer ─── */
 @media (pointer: fine) and (min-width: 1024px) {
   *, *::before, *::after {
     cursor: none !important;
@@ -250,4 +255,60 @@ body.lightbox-open .fixed.bottom-20 /* Butterfly Particle */ {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.5s ease !important;
+}
+
+/* ─── Hardware Acceleration & Mobile Touch Optimization ─────────── */
+.transform-gpu {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── CSS-based Dust Particle Animation (GPU Accelerated) ──────── */
+@keyframes css-dust-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: var(--p-max-opacity, 0.3);
+  }
+  80% {
+    opacity: var(--p-max-opacity, 0.3);
+  }
+  100% {
+    transform: translate3d(var(--p-drift-x, 20px), var(--p-drift-y, -300px), 0);
+    opacity: 0;
+  }
+}
+
+.animate-dust-particle {
+  will-change: transform, opacity;
+  animation: css-dust-float var(--p-duration, 8s) ease-out infinite;
+  animation-delay: var(--p-delay, 0s);
+}
+
+/* ─── CSS-based Sparkle Animation for Butterfly Trail ─────────── */
+@keyframes css-sparkle-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate3d(2px, -10px, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-3px, -22px, 0) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-sparkle {
+  will-change: transform, opacity;
+  animation: css-sparkle-float 1.6s ease-out infinite;
 }

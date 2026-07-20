@@ -41,6 +41,25 @@ export default function Navbar() {
     };
   }, []);
 
+  // Lock background scroll when mobile fullscreen menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      window.__lenisInstance?.stop?.();
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      window.__lenisInstance?.start?.();
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      window.__lenisInstance?.start?.();
+    };
+  }, [menuOpen]);
+
+
   const scrollTo = (href) => {
     setMenuOpen(false);
     const path = window.location.pathname.replace(/\/$/, '');
@@ -160,9 +179,10 @@ export default function Navbar() {
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
-          className="group relative flex flex-col justify-center items-center w-12 h-12 gap-[6px] rounded-full hover:bg-white/5 transition-all duration-500 overflow-hidden"
+          className="group relative flex flex-col justify-center items-center w-12 h-12 gap-1.5 rounded-full hover:bg-white/5 transition-all duration-500 overflow-hidden"
           data-cursor="magnetic"
         >
+
           <motion.span
             className="block w-6 h-[1.5px] bg-titli/80 origin-center"
             animate={{ 
@@ -200,11 +220,11 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center overflow-y-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: 'linear' }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
           >
             {/* Background Blur Overlay */}
             <motion.div 
@@ -215,7 +235,7 @@ export default function Navbar() {
             />
 
             {/* Menu Items */}
-            <nav className="relative z-10 flex flex-col items-center gap-4 md:gap-8 pt-30 pb-24 px-10">
+            <nav className="relative z-10 flex flex-col items-center gap-3 md:gap-6 py-20 px-6 my-auto max-h-full">
               {navItems.map((item, i) => (
                 <motion.div
                   key={item.name}
@@ -228,7 +248,7 @@ export default function Navbar() {
                 >
                   <a
                     href={item.href}
-                    className="relative block py-2 px-10 text-center"
+                    className="relative block py-2 px-8 text-center"
                     onClick={(e) => handleNavClick(e, item)}
                     data-cursor="magnetic"
                   >
@@ -236,15 +256,15 @@ export default function Navbar() {
                     <span className="absolute inset-0 bg-titli/0 group-hover:bg-titli/5 blur-2xl rounded-full transition-all duration-500 scale-0 group-hover:scale-110" />
                     
                     <span className="relative flex flex-col items-center">
-                      <span className="font-serif text-4xl md:text-6xl text-white/80 md:text-white/40 md:group-hover:text-titli transition-all duration-500 italic lowercase tracking-tighter">
+                      <span className="font-serif text-3xl sm:text-4xl md:text-6xl text-white/90 md:text-white/40 md:group-hover:text-titli transition-all duration-500 italic lowercase tracking-tighter">
                         {item.name}
                       </span>
                       
                       {/* Animated underline */}
-                      <span className="block h-px bg-titli/30 mt-2 w-full md:w-0 md:group-hover:w-full transition-all duration-700 ease-out" />
+                      <span className="block h-px bg-titli/30 mt-1.5 w-full md:w-0 md:group-hover:w-full transition-all duration-700 ease-out" />
                       
                       {/* Numbering (aesthetic) */}
-                      <span className="absolute -left-4 top-1/2 -translate-y-1/2 font-sans text-[10px] tracking-[0.4em] text-titli/10 group-hover:text-titli/40 transition-colors uppercase">
+                      <span className="absolute -left-4 top-1/2 -translate-y-1/2 font-sans text-[10px] tracking-[0.4em] text-titli/20 group-hover:text-titli/40 transition-colors uppercase">
                         0{i + 1}
                       </span>
                     </span>

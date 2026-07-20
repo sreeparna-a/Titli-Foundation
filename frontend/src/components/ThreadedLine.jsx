@@ -59,13 +59,6 @@ export default function ThreadedLine() {
         style={{ opacity: glowOpacity }}
       >
         <defs>
-          <filter id="threadGlow" x="-50%" y="-10%" width="200%" height="120%">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
           <linearGradient id="pathGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#E5FC54" stopOpacity="0.9" />
             <stop offset="40%" stopColor="#d17c26" stopOpacity="0.8" />
@@ -74,15 +67,14 @@ export default function ThreadedLine() {
           </linearGradient>
         </defs>
 
-        {/* Outer glow layer */}
+        {/* Outer soft aura layer */}
         <motion.path
           d={artPath}
           fill="none"
           stroke="url(#pathGrad)"
-          strokeWidth="4"
+          strokeWidth="3.5"
           strokeLinecap="round"
-          filter="url(#threadGlow)"
-          style={{ pathLength }}
+          style={{ pathLength, opacity: 0.35 }}
         />
 
         {/* Inner crisp line */}
@@ -99,9 +91,8 @@ export default function ThreadedLine() {
         <motion.circle
           cx="0"
           cy="0"
-          r="4"
+          r="3.5"
           fill="#E5FC54"
-          filter="url(#threadGlow)"
           style={{
             offsetPath: `path("${artPath.replace(/\s+/g, ' ').trim()}")`,
             offsetDistance: pathLength,

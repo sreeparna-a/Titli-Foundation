@@ -6,54 +6,44 @@ import SplitText from './SplitText';
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
 void motion;
 
-// Tiny floating dust particles that drift upward
+// Tiny floating dust particles that drift upward (GPU accelerated via CSS keyframes)
+const STABLE_PARTICLES = Array.from({ length: 20 }, (_, i) => {
+  // Deterministic values based on index to avoid layout shifts / re-renders
+  const x = (i * 17 + 7) % 100;
+  const delay = (i * 0.4) % 6;
+  const duration = 6 + (i % 5) * 1.5;
+  const driftX = ((i % 2 === 0 ? 1 : -1) * (15 + (i * 9) % 35)) + 'px';
+  const driftY = -(220 + (i * 13) % 180) + 'px';
+  const opacity = (0.15 + (i % 4) * 0.08).toFixed(2);
+  const size = (1 + (i % 3) * 0.6).toFixed(1) + 'px';
+
+  return { id: i, x, delay, duration, driftX, driftY, opacity, size };
+});
+
 function DustParticles() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const particleCount = isMobile ? 10 : 24;
-  const PARTICLES = Array.from({ length: particleCount }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,       // vw %
-    delay: Math.random() * 8,      // s
-    duration: 6 + Math.random() * 8,
-    size: 1 + Math.random() * (isMobile ? 1.5 : 2),
-    opacity: 0.1 + Math.random() * 0.3,
-  }));
-
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-5">
-      {PARTICLES.map((p) => (
-        <motion.div
+      {STABLE_PARTICLES.map((p) => (
+        <div
           key={p.id}
-          className="absolute rounded-full bg-titli"
+          className="absolute rounded-full bg-titli animate-dust-particle transform-gpu"
           style={{
             left: `${p.x}%`,
             bottom: '-10px',
             width: p.size,
             height: p.size,
-          }}
-          animate={{
-            y: [0, -(Math.random() * 300 + 200)],
-            opacity: [0, p.opacity, 0],
-            x: [0, (Math.random() - 0.5) * 60],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: 'easeOut',
+            '--p-duration': `${p.duration}s`,
+            '--p-delay': `${p.delay}s`,
+            '--p-drift-x': p.driftX,
+            '--p-drift-y': p.driftY,
+            '--p-max-opacity': p.opacity,
           }}
         />
       ))}
     </div>
   );
 }
+
 
 export default function Hero({ isLoaded }) {
   const sectionRef = useRef(null);

@@ -77,58 +77,35 @@ export default function ButterflyParticle() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { const t = setTimeout(() => setMounted(true), 1800); return () => clearTimeout(t); }, []);
 
-  // Continuous gentle drift
+  // Motion values driven by a single unified RAF loop
   const driftX = useMotionValue(0);
   const driftY = useMotionValue(0);
-  const frameRef = useRef(0);
-
-  useEffect(() => {
-    let t = 0;
-    const tick = () => {
-      t += 0.008;
-      driftX.set(Math.sin(t * 0.7) * 14);
-      driftY.set(Math.cos(t) * 8);
-      frameRef.current = requestAnimationFrame(tick);
-    };
-    frameRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frameRef.current);
-  }, [driftX, driftY]);
-
-  // Wing flap oscillates using a motion value driven by RAF
   const flapProgress = useMotionValue(0);
-
-  useEffect(() => {
-    let t = 0;
-    const tick = () => {
-      t += 0.03;
-      // Sawtooth 0→1→0 for wing flap
-      flapProgress.set((Math.sin(t) + 1) / 2);
-      requestAnimationFrame(tick);
-    };
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [flapProgress]);
-
-  // Glow pulse
   const glowScale = useMotionValue(1);
+
   useEffect(() => {
     let t = 0;
+    let animId;
     const tick = () => {
       t += 0.015;
-      glowScale.set(1 + Math.sin(t) * 0.3);
-      requestAnimationFrame(tick);
+      driftX.set(Math.sin(t * 0.5) * 14);
+      driftY.set(Math.cos(t * 0.7) * 8);
+      flapProgress.set((Math.sin(t * 2) + 1) / 2);
+      glowScale.set(1 + Math.sin(t) * 0.25);
+      animId = requestAnimationFrame(tick);
     };
-    const id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
-  }, [glowScale]);
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [driftX, driftY, flapProgress, glowScale]);
 
   // Combine mounted state and scroll-driven opacity
   const finalOpacity = useTransform(scrollOpacity, (v) => (mounted ? v : 0));
 
   return (
     <motion.div
-      className="fixed bottom-20 right-6 md:right-14 pointer-events-none z-60 select-none"
+      className="fixed bottom-20 right-6 md:right-14 pointer-events-none z-60 select-none will-change-transform transform-gpu"
       style={{ y: ySpring, opacity: finalOpacity, x: driftX }}
+
       initial={{ scale: 0.5 }}
       animate={{ scale: mounted ? 1 : 0.5 }}
       transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
@@ -147,14 +124,13 @@ export default function ButterflyParticle() {
           }}
         />
 
-        {/* SVG butterfly — bigger for visibility */}
+        {/* SVG butterfly */}
         <svg
           width="90"
           height="100"
           viewBox="-45 5 90 80"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ filter: 'drop-shadow(0 0 6px rgba(229,252,84,0.4))' }}
         >
           <ButterflyWing side="left" flapProgress={flapProgress} />
           <ButterflyWing side="right" flapProgress={flapProgress} />
@@ -170,22 +146,15 @@ export default function ButterflyParticle() {
           <circle cx={8} cy={2} r={1.2} fill="rgba(229,252,84,0.6)" />
         </svg>
 
-        {/* Sparkle trails - reduced on mobile */}
-        {[...Array(typeof window !== 'undefined' && window.innerWidth < 768 ? 2 : 4)].map((_, i) => (
-          <motion.div
+        {/* Sparkle trails - CSS Keyframes for maximum 60fps performance */}
+        {[0, 1, 2, 3].map((i) => (
+          <div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-titli/60"
-            style={{ bottom: i * 6, right: -4 + i * 2 }}
-            animate={{
-              opacity: [0, 0.6, 0],
-              y: [0, -10, -20],
-              scale: [0.5, 1, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              delay: i * 0.35,
-              ease: 'easeOut',
+            className={`absolute w-1 h-1 rounded-full bg-titli/60 animate-sparkle ${i >= 2 ? 'hidden sm:block' : ''}`}
+            style={{
+              bottom: i * 6,
+              right: -4 + i * 2,
+              animationDelay: `${i * 0.35}s`,
             }}
           />
         ))}
@@ -193,3 +162,4 @@ export default function ButterflyParticle() {
     </motion.div>
   );
 }
+

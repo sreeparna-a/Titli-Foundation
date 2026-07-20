@@ -35,8 +35,9 @@ export default function CardStackSection({ children, index, noOverflow = false }
         opacity,
         borderRadius,
         transformOrigin: 'top center',
+        willChange: 'transform, opacity',
       }}
-      className={`relative will-change-transform ${noOverflow ? '' : 'overflow-hidden'}`}
+      className={`relative card-stack-item ${noOverflow ? '' : 'overflow-hidden'}`}
     >
       {children}
     </motion.div>

@@ -4,12 +4,13 @@ import Lenis from 'lenis';
 export default function SmoothScroller({ children }) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      wheelMultiplier: 1.2,
-      touchMultiplier: 0, // Disable smooth scroll on touch
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.0,
     });
+
 
     // Expose instance so modals can pause smooth scrolling while open.
     window.__lenisInstance = lenis;

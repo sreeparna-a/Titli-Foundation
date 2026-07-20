@@ -190,7 +190,7 @@ export function Events() {
       >
         {/* Subtle parallax ambient shape */}
         <motion.div
-          className="absolute -right-40 top-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+          className="absolute -right-40 top-20 w-125 h-125 rounded-full pointer-events-none"
           style={{
             background: 'radial-gradient(circle, rgba(229,252,84,0.04) 0%, transparent 70%)',
             y: bgY,
@@ -223,7 +223,7 @@ export function Events() {
             </motion.div>
           </div>
 
-          <div className="flex flex-col border-t border-white/10 min-h-[300px]">
+          <div className="flex flex-col border-t border-white/10 min-h-75">
             <AnimatePresence mode="popLayout">
               {filteredEvents.map((event, i) => (
                 <motion.div
@@ -249,13 +249,14 @@ export function Events() {
 
                   {/* Accent line on left */}
                   <motion.div
-                    className="absolute left-0 top-0 bottom-0 w-[2px] z-0"
+                    className="absolute left-0 top-0 bottom-0 w-0.5 z-0"
                     style={{ background: event.accentColor }}
                     initial={{ scaleY: 0 }}
                     whileInView={{ scaleY: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
                   />
+
 
                   <div className="relative z-10 flex flex-col md:w-1/2 pl-4">
                     <span className={`text-xs uppercase tracking-widest font-sans mb-2 ${event.color}`}>
@@ -326,7 +327,7 @@ export function Members() {
     >
       {/* Ambient left glow */}
       <motion.div
-        className="absolute -left-60 top-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        className="absolute -left-60 top-1/2 -translate-y-1/2 w-150 h-150 rounded-full pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(41,122,81,0.07) 0%, transparent 70%)',
           x: bgX,
@@ -387,16 +388,26 @@ export function Members() {
 function MemberCard({ member, i }) {
   const mouseX = useMotionValue(50);
   const mouseY = useMotionValue(50);
+  const rectRef = useRef(null);
 
   const xPercent = useTransform(mouseX, (v) => `${v}%`);
   const yPercent = useTransform(mouseY, (v) => `${v}%`);
 
+  const handleMouseEnter = (e) => {
+    if (window.matchMedia('(hover: hover)').matches) {
+      rectRef.current = e.currentTarget.getBoundingClientRect();
+    }
+  };
+
   const handleMouseMove = (e) => {
     // Only track mouse on devices with hover capability (desktops)
     if (window.matchMedia('(hover: hover)').matches) {
-      const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-      const x = (e.clientX - left) / width;
-      const y = (e.clientY - top) / height;
+      if (!rectRef.current) {
+        rectRef.current = e.currentTarget.getBoundingClientRect();
+      }
+      const rect = rectRef.current;
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
       mouseX.set(x * 100);
       mouseY.set(y * 100);
     }
@@ -404,13 +415,15 @@ function MemberCard({ member, i }) {
 
   return (
     <motion.div
-      className="relative group cursor-pointer"
+      className="relative group cursor-pointer transform-gpu"
       initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ delay: i * 0.12, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
     >
+
       {/* Outer Editorial Border */}
       <div className="relative aspect-3/4 overflow-hidden bg-forest border border-white/10 group-hover:border-titli/40 group-hover:shadow-[0_0_30px_rgba(229,252,84,0.15)] transition-all duration-700">
         
@@ -547,10 +560,14 @@ export function Gallery() {
     offset: ['start start', 'end end'],
   });
 
+  const prevActiveRef = useRef(false);
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     // Hidden while pinning/horizontal scrolling
     const isActive = isDesktop && latest > 0.01 && latest < 0.99;
-    window.dispatchEvent(new CustomEvent('gallery-active', { detail: isActive }));
+    if (prevActiveRef.current !== isActive) {
+      prevActiveRef.current = isActive;
+      window.dispatchEvent(new CustomEvent('gallery-active', { detail: isActive }));
+    }
   });
 
   const filtered = galleryData;
@@ -571,11 +588,17 @@ export function Gallery() {
 
   // Slide index for the counter
   const [slideIndex, setSlideIndex] = useState(0);
+  const slideIndexRef = useRef(0);
   useEffect(() => {
     return scrollYProgress.on('change', (v) => {
-      setSlideIndex(Math.round(v * (totalSlides - 1)));
+      const idx = Math.round(v * (totalSlides - 1));
+      if (slideIndexRef.current !== idx) {
+        slideIndexRef.current = idx;
+        setSlideIndex(idx);
+      }
     });
   }, [scrollYProgress, totalSlides]);
+
 
   return (
     <>
@@ -846,7 +869,7 @@ export function Contact() {
         viewport={{ once: true }}
         transition={{ duration: 1.5 }}
       >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-titli/3 blur-[120px] rounded-full" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-150 bg-titli/3 blur-[120px] rounded-full" />
       </motion.div>
 
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-24 relative z-10 pl-0 sm:pl-6 lg:pl-24">
@@ -1002,20 +1025,14 @@ export function Contact() {
             <motion.button
               type="submit"
               disabled={isSubmitting}
-              className={`mt-2 py-4 px-8 border border-titli/30 text-titli font-sans text-[11px] uppercase tracking-[0.2em] hover:bg-titli hover:text-forest transition-all duration-300 w-full rounded-lg overflow-hidden relative group ${isSubmitting ? 'opacity-50' : ''}`}
-              whileHover={isSubmitting ? {} : { scale: 1.02 }}
+              className={`mt-2 py-4 px-8 border border-titli bg-titli/10 text-titli hover:bg-titli hover:text-forest font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-all duration-300 w-full rounded-lg shadow-lg cursor-pointer ${
+                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              whileHover={isSubmitting ? {} : { scale: 1.01 }}
               whileTap={isSubmitting ? {} : { scale: 0.98 }}
               data-cursor="magnetic"
             >
-              <span className="relative z-10">{isSubmitting ? 'Sending...' : 'Send Message'}</span>
-              {!isSubmitting && (
-                <motion.div
-                  className="absolute inset-0 bg-titli origin-left"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                />
-              )}
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </motion.button>
           </form>
         </motion.div>

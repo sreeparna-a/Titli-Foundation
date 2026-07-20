@@ -176,6 +176,7 @@ export default function EventModal({ event, onClose }) {
         <motion.div
           className="fixed inset-0 z-100000 flex items-center justify-center px-3 py-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))] sm:p-6"
           variants={backdropVariants}
+
           initial="hidden"
           animate="visible"
           exit="exit"
@@ -185,6 +186,7 @@ export default function EventModal({ event, onClose }) {
             backdropFilter: 'blur(16px)',
           }}
         >
+
           {/* Panel */}
           <motion.div
             className="relative w-full sm:max-w-3xl lg:max-w-4xl mx-auto rounded-2xl overflow-hidden"
@@ -306,33 +308,21 @@ export default function EventModal({ event, onClose }) {
                 <motion.div variants={itemVariants} className="flex items-center gap-4 pt-2">
                   {event.type === 'Upcoming' && (
                     <motion.button
-                      className="py-3 px-8 border font-sans text-[10px] uppercase tracking-[0.2em] rounded-lg relative overflow-hidden group"
+                      className="py-3 px-8 border font-sans text-xs uppercase tracking-[0.2em] font-semibold rounded-lg transition-all duration-300 cursor-pointer"
                       style={{
-                        borderColor: `${event.accentColor}50`,
+                        borderColor: event.accentColor,
+                        backgroundColor: `${event.accentColor}15`,
                         color: event.accentColor,
                       }}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{
+                        backgroundColor: event.accentColor,
+                        color: '#0B1411',
+                        scale: 1.02,
+                      }}
                       whileTap={{ scale: 0.98 }}
                       data-cursor="magnetic"
                     >
-                      <span className="relative z-10">Reserve Your Seat</span>
-                      <motion.div
-                        className="absolute inset-0 origin-left"
-                        style={{ background: event.accentColor }}
-                        initial={{ scaleX: 0 }}
-                        whileHover={{ scaleX: 1 }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                        onAnimationStart={() => {}}
-                      />
-                      {/* text color hack: cover with colored text on hover */}
-                      <motion.span
-                        className="absolute inset-0 flex items-center justify-center font-sans text-[10px] uppercase tracking-[0.2em] text-forest z-20 pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                        transition={{ duration: 0.15, delay: 0.15 }}
-                      >
-                        Reserve Your Seat
-                      </motion.span>
+                      Reserve Your Seat
                     </motion.button>
                   )}
                   <button

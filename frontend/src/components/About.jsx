@@ -4,29 +4,13 @@ import { useRef } from 'react';
 // ESLint in this repo doesn't treat `motion.*` JSX element usage as a "use".
 void motion;
 
-const wordOpacityRange = (index, total) => {
-  const step = 1 / total;
-  const start = index * step;
-  const end = start + step;
-  return [start, end];
-};
-
-const ScrollWord = ({ children, progress, range }) => {
-  const opacity = useTransform(progress, range, [0.08, 1]);
-  const y = useTransform(progress, range, [6, 0]);
-  return (
-    <motion.span style={{ opacity, y }} className="inline-block mr-[0.25em]">
-      {children}
-    </motion.span>
-  );
-};
-
 import aboutImg from '../assets/about_theatre.png';
 
 export default function About() {
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -43,14 +27,16 @@ export default function About() {
   const photoY = useTransform(sectionProgress, [0, 1], [30, -35]);
   const headlineY = useTransform(sectionProgress, [0, 1], [-15, 15]);
 
+  const p1Opacity = useTransform(scrollYProgress, [0, 0.45], [0.2, 1]);
+  const p1Y = useTransform(scrollYProgress, [0, 0.45], [15, 0]);
+
+  const p2Opacity = useTransform(scrollYProgress, [0.35, 0.8], [0.2, 1]);
+  const p2Y = useTransform(scrollYProgress, [0.35, 0.8], [15, 0]);
+
   const text1 =
     'Established with a deep appreciation for the classical and the contemporary, the Titli Foundation nurtures visionaries in theatre, film, and art. We are a sanctuary for storytellers who dare to push boundaries.';
   const text2 =
     'Our mission extends beyond performance; we believe in art as a tool for immense social responsibility, igniting conversations that reverberate long after the curtains fall.';
-
-  const words1 = text1.split(' ');
-  const words2 = text2.split(' ');
-  const totalWords = words1.length + words2.length;
 
   return (
     <section
@@ -69,7 +55,7 @@ export default function About() {
       </motion.div>
 
       {/* Ambient glow blob */}
-      <div className="absolute top-1/3 right-0 w-[400px] h-[400px] rounded-full pointer-events-none opacity-60 ambient-glow"
+      <div className="absolute top-1/3 right-0 w-100 h-100 rounded-full pointer-events-none opacity-60 ambient-glow"
         style={{ background: 'radial-gradient(circle, rgba(41,122,81,0.08) 0%, transparent 70%)' }}
       />
 
@@ -128,8 +114,9 @@ export default function About() {
         >
           {/* Main card/image frame */}
           <div
-            className="relative w-full aspect-4/5 lg:w-auto lg:h-[94%] lg:aspect-3/4 max-w-[380px] lg:max-w-none group"
+            className="relative w-full aspect-4/5 lg:w-auto lg:h-[94%] lg:aspect-3/4 max-w-95 lg:max-w-none group"
           >
+
             
             {/* Viewfinder Brackets with hover contraction */}
             <div className="viewfinder-bracket viewfinder-bracket-tl transition-all duration-500 group-hover:translate-x-1.5 group-hover:translate-y-1.5" />
@@ -187,33 +174,17 @@ export default function About() {
         {/* 4. Narrative Content */}
         <div className="order-4 lg:col-start-6 lg:col-span-7 lg:row-start-3 flex flex-col justify-start lg:mt-8">
           
-          {/* Scroll-animated words */}
+          {/* Scroll-animated narrative paragraphs */}
           <div
             ref={containerRef}
             className="font-sans text-white/90 text-base sm:text-lg lg:text-xl font-light leading-relaxed space-y-6 max-w-2xl"
           >
-            <p>
-              {words1.map((word, i) => (
-                <ScrollWord
-                  key={`w1-${i}`}
-                  progress={scrollYProgress}
-                  range={wordOpacityRange(i, totalWords)}
-                >
-                  {word}
-                </ScrollWord>
-              ))}
-            </p>
-            <p>
-              {words2.map((word, i) => (
-                <ScrollWord
-                  key={`w2-${i}`}
-                  progress={scrollYProgress}
-                  range={wordOpacityRange(i + words1.length, totalWords)}
-                >
-                  {word}
-                </ScrollWord>
-              ))}
-            </p>
+            <motion.p style={{ opacity: p1Opacity, y: p1Y }}>
+              {text1}
+            </motion.p>
+            <motion.p style={{ opacity: p2Opacity, y: p2Y }}>
+              {text2}
+            </motion.p>
           </div>
 
           {/* Bottom counter / decoration */}

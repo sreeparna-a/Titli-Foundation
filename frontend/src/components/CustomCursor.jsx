@@ -31,10 +31,24 @@ export default function CustomCursor() {
   const [isDesktop, setIsDesktop] = useState(false);
   const cursorRef = useRef(null);
 
+  const stateRef = useRef('default');
+  const labelRef = useRef('');
+  const isVisibleRef = useRef(false);
+
+  const updateCursorState = (newState, newLabel = '') => {
+    if (stateRef.current !== newState || labelRef.current !== newLabel) {
+      stateRef.current = newState;
+      labelRef.current = newLabel;
+      setState(newState);
+      setLabel(newLabel);
+    }
+  };
+
   useEffect(() => {
-    // Check if we are on desktop/laptop size
+    // Check if we are on desktop/laptop size with a fine pointer (mouse/trackpad)
     const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
+      const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+      setIsDesktop(window.innerWidth >= 1024 && hasFinePointer);
     };
 
     checkIsDesktop();
@@ -43,41 +57,51 @@ export default function CustomCursor() {
     const onMove = (e) => {
       rawX.set(e.clientX);
       rawY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
     };
 
-    const onLeave = () => setIsVisible(false);
-    const onEnter = () => setIsVisible(true);
+    const onLeave = () => {
+      isVisibleRef.current = false;
+      setIsVisible(false);
+    };
+
+    const onEnter = () => {
+      isVisibleRef.current = true;
+      setIsVisible(true);
+    };
 
     // Detect which element the cursor is over
     const onOver = (e) => {
       let el = e.target;
-      // Walk up the DOM to find a data-cursor attribute
-      while (el && el !== document.body) {
-        const c = el.getAttribute('data-cursor');
+      let depth = 0;
+      // Walk up the DOM up to 5 levels max to find data-cursor attribute or interactive element
+      while (el && el !== document.body && depth < 5) {
+        const c = el.getAttribute?.('data-cursor');
         if (c) {
-          setState(c);
-          setLabel(el.getAttribute('data-cursor-label') || c.charAt(0).toUpperCase() + c.slice(1));
+          const l = el.getAttribute('data-cursor-label') || c.charAt(0).toUpperCase() + c.slice(1);
+          updateCursorState(c, l);
           return;
         }
         // Detect interactive elements automatically
         const tag = el.tagName?.toLowerCase();
-        if (tag === 'a' || tag === 'button' || el.getAttribute('role') === 'button') {
-          setState('magnetic');
-          setLabel('');
+        if (tag === 'a' || tag === 'button' || el.getAttribute?.('role') === 'button') {
+          updateCursorState('magnetic', '');
           return;
         }
         el = el.parentElement;
+        depth++;
       }
-      setState('default');
-      setLabel('');
+      updateCursorState('default', '');
     };
 
     if (isDesktop) {
-      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mousemove', onMove, { passive: true });
       document.addEventListener('mouseleave', onLeave);
       document.addEventListener('mouseenter', onEnter);
-      document.addEventListener('mouseover', onOver);
+      document.addEventListener('mouseover', onOver, { passive: true });
     }
 
     return () => {
@@ -87,7 +111,7 @@ export default function CustomCursor() {
       document.removeEventListener('mouseenter', onEnter);
       document.removeEventListener('mouseover', onOver);
     };
-  }, [rawX, rawY, isVisible, isDesktop]);
+  }, [rawX, rawY, isDesktop]);
 
   // State-derived ring styles
   const ringSize = state === 'magnetic' ? 72 : state === 'view' ? 88 : state === 'text' ? 24 : 48;
@@ -114,7 +138,7 @@ export default function CustomCursor() {
       {/* Outer trailing ring */}
       <motion.div
         ref={cursorRef}
-        className="fixed top-0 left-0 pointer-events-none z-100001 flex items-center justify-center"
+        className="fixed top-0 left-0 pointer-events-none z-100001 flex items-center justify-center will-change-transform transform-gpu"
         style={{
           x: ringX,
           y: ringY,
@@ -128,9 +152,8 @@ export default function CustomCursor() {
           borderRadius: '50%',
           border: ringBorder,
           background: ringBg,
-          backdropFilter: state === 'view' ? 'blur(4px)' : 'none',
         }}
-        transition={{ width: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }, height: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }, border: { duration: 0.2 }, default: { duration: 0.2 } }}
+        transition={{ width: { duration: 0.25, ease: 'easeOut' }, height: { duration: 0.25, ease: 'easeOut' }, border: { duration: 0.2 }, default: { duration: 0.2 } }}
       >
         {/* Label text inside ring — only for "view" state */}
         {state === 'view' && label && (
@@ -148,7 +171,8 @@ export default function CustomCursor() {
 
       {/* Inner crisp dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-100001 rounded-full bg-titli"
+        className="fixed top-0 left-0 pointer-events-none z-100001 rounded-full bg-titli transform-gpu"
+
         style={{
           x: rawX,
           y: rawY,
@@ -162,3 +186,4 @@ export default function CustomCursor() {
     </>
   );
 }
+

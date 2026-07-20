@@ -67,7 +67,7 @@ export default function PageTransition({ children }) {
       </motion.div>
 
       {/* Fullscreen Curtain SVGs */}
-      <div className="fixed inset-0 pointer-events-none z-100 w-screen h-screen">
+      <div className="fixed inset-0 pointer-events-none z-100 w-screen h-screen transform-gpu">
         <svg 
           className="absolute inset-0 w-full h-full" 
           viewBox="0 0 100 100" 
@@ -98,8 +98,10 @@ export default function PageTransition({ children }) {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="fixed inset-0 flex flex-col items-center justify-center z-110 pointer-events-none"
+        className="fixed inset-0 flex flex-col items-center justify-center z-110 pointer-events-none transform-gpu"
       >
+
+
         <div className="flex flex-col items-center gap-4">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border border-titli/40 overflow-hidden shadow-[0_0_35px_rgba(229,252,84,0.3)] bg-forest/90 flex items-center justify-center">
             <img 
